@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from Views.main_view import MainView
+from main_view import MainView
 
 def main():
     # Configurazione tema

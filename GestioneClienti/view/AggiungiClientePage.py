@@ -2,12 +2,12 @@ from datetime import datetime
 import customtkinter as ctk
 from PIL import Image
 from GestioneClienti.controller.cliente_controller import ClienteController
-from GestioneClienti.model.cliente import Cliente, Sesso
+from GestioneClienti.model.Cliente import Cliente, Sesso
 
 class AggiungiClientePage(ctk.CTkFrame):
-    def __init__(self, master, controller, cliente, back_callback):
+    def __init__(self, master, controller, back_callback):
         super().__init__(master)
-        self.cliente = cliente
+        self.cliente = None  # Inizializzo cliente come None, sarà creato al salvataggio
         self.back_callback = back_callback
         self.controller = controller
 
@@ -208,7 +208,7 @@ class AggiungiClientePage(ctk.CTkFrame):
 
         # Validazione e salvataggio del cliente
         if not nome or not cognome or not email:
-            ctk.CTkMessagebox(title="Errore", message="Nome, Cognome ed Email sono obbligatori.")
+            print(title="Errore", message="Nome, Cognome ed Email sono obbligatori.")
             return
 
         cliente = Cliente(
@@ -217,10 +217,10 @@ class AggiungiClientePage(ctk.CTkFrame):
             cognome=cognome,
             email=email,
             telefono=telefono,
-            data_nascita=datetime.strptime(data_nascita, "%d/%m/%Y").date(),
-            sesso=sesso,
-            scheda=None,
-            abbonamento=None,
+            data_nascita=data_nascita,
+            sesso=sesso.value,
+            scheda="",
+            abbonamento="",
             foto="",
             certificatoMedico=""
         )

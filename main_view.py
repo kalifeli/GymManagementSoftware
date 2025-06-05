@@ -1,81 +1,58 @@
-
 import customtkinter as ctk
 from PIL import Image
+from GestioneClienti.controller.cliente_controller import ClienteController
+from GestioneClienti.view.AggiungiClientePage import AggiungiClientePage
+from GestioneClienti.view.ClientiPage import ClientiPage
+from HomePage import HomePage
 
-class HomePage(ctk.CTkFrame):
-    def __init__(self, master, show_clienti_callback, show_contabilità_callback):
-        """
-        master: riferimento al MainView
-        show_clienti_callback: funzione da chiamare quando si clicca "Clienti"
-        show_contabilità_callback: funzione da chiamare quando si clicca "Contabilità"
-        """
-        super().__init__(master)
+class MainView(ctk.CTk):
+    def __init__(self):
+        super().__init__()
 
-        # Imposto layout a griglia per questa pagina (1 colonna, 3 righe)
-        self.grid_rowconfigure(0, weight=1)  # spazio sopra il titolo
-        self.grid_rowconfigure(1, weight=0)  # titolo
-        self.grid_rowconfigure(2, weight=1)  # spazio fra titolo e bottoni
-        self.grid_rowconfigure(3, weight=0)  # bottoni
-        self.grid_rowconfigure(4, weight=1)  # spazio sotto i bottoni
+        self.title("Gym Management Software")
+        self.geometry("1024x768")
+
+        self.container = ctk.CTkFrame(self)
+        self.container.grid(row=0, column=0, sticky="nsew")
+
+        self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
 
-        # Titolo grande e centrato
-        title_label = ctk.CTkLabel(
-            self,
-            text="Millennum Club",
-            font=ctk.CTkFont(size=32, weight="bold"),
-            text_color="#ffffff"
+        # Istanzia direttamente la HomePage
+        self.home_page = HomePage(self.container, show_clienti_callback=self.show_clienti_page)
+        self.home_page.grid(row=0, column=0, sticky="nsew")
+
+        self.show_home_page()
+
+    def show_home_page(self):
+        self.home_page.tkraise()
+
+   
+
+
+    def show_clienti_page(self):
+        self.clienti_page = ClientiPage(
+            self.container,
+            controller=None,  # Il controller sarà impostato dopo
+            back_callback=self.show_home_page,
+            show_aggiungi_cliente_callback= self.show_aggiungi_cliente_page,
+            show_info_cliente_callback=None
         )
-        title_label.grid(row=1, column=0, pady=(20, 10), sticky="n")
+        self.clienti_page.controller = ClienteController(self.clienti_page)
+        self.clienti_page.grid(row=0, column=0, sticky="nsew")
+        self.clienti_page.tkraise()
 
-        # Carico le icone (ridimensiono a 40×40)
-        self.clienti_icon = ctk.CTkImage(
-            Image.open("utils/assets/clienti.png").resize((40, 40)),
-            size=(40, 40)
+    def show_aggiungi_cliente_page(self):
+        self.aggiungi_cliente_page = AggiungiClientePage(
+            self.container,
+            controller= None,
+            back_callback=self.show_clienti_page
         )
-        self.contabilita_icon = ctk.CTkImage(
-            Image.open("utils/assets/contabilità.png").resize((40, 40)),
-            size=(40, 40)
-        )
+        self.aggiungi_cliente_page.controller = ClienteController(self.aggiungi_cliente_page)
+        self.aggiungi_cliente_page.grid(row=0, column=0, sticky="nsew")
+        self.aggiungi_cliente_page.tkraise()
 
-        # Frame orizzontale per i due bottoni
-        button_frame = ctk.CTkFrame(self, fg_color="transparent")
-        button_frame.grid(row=3, column=0, pady=(10, 10))
+    
 
-        # Imposto griglia interna per disporre i due bottoni fianco a fianco
-        button_frame.grid_columnconfigure(0, weight=1)
-        button_frame.grid_columnconfigure(1, weight=1)
-
-        # Bottone "Clienti"
-        clienti_button = ctk.CTkButton(
-            master=button_frame,
-            text="Clienti",
-            image=self.clienti_icon,
-            compound="top",
-            width=140,
-            height=140,
-            corner_radius=16,
-            fg_color="#3a7ff6",
-            hover_color="#5596ff",
-            text_color="#ffffff",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            command=show_clienti_callback  # callback per navigare
-        )
-        clienti_button.grid(row=0, column=0, padx=20, sticky="nsew")
-
-        # Bottone "Contabilità"
-        contabilità_button = ctk.CTkButton(
-            master=button_frame,
-            text="Contabilità",
-            image=self.contabilita_icon,
-            compound="top",
-            width=140,
-            height=140,
-            corner_radius=16,
-            fg_color="#3a7ff6",
-            hover_color="#5596ff",
-            text_color="#ffffff",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            command=show_contabilità_callback
-        )
-        contabilità_button.grid(row=0, column=1, padx=20, sticky="nsew")

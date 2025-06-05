@@ -3,7 +3,7 @@ import customtkinter as ctk
 from PIL import Image
 
 class HomePage(ctk.CTkFrame):
-    def __init__(self, master, show_clienti_callback, show_contabilità_callback):
+    def __init__(self, master, show_clienti_callback = None, show_contabilità_callback = None):
         """
         master: riferimento al MainView
         show_clienti_callback: funzione da chiamare quando si clicca "Clienti"

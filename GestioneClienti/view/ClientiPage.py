@@ -3,16 +3,18 @@ from PIL import Image
 
 
 class ClientiPage(ctk.CTkFrame):
-    def __init__(self, master, back_callback, show_aggiungi_cliente_callback, show_info_cliente_callback):
+    def __init__(self, master, controller, back_callback, show_aggiungi_cliente_callback = None, show_info_cliente_callback = None):
         """
         master: riferimento al MainView
         back_callback: funzione da chiamare per tornare a HomePage
         """
         super().__init__(master)
 
+        self.controller = controller
         self.back_callback = back_callback
         self.show_aggiungi_cliente_callback = show_aggiungi_cliente_callback
         self.show_info_cliente_callback = show_info_cliente_callback
+    
 
         self.sidebar_frame = ctk.CTkFrame(
             master=self,
@@ -113,6 +115,7 @@ class ClientiPage(ctk.CTkFrame):
         """
         Visualizza la lista dei clienti nella scrollable_frame.
         """
+        self.all_clienti = clienti 
         # Pulisce il contenuto precedente
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
@@ -131,7 +134,8 @@ class ClientiPage(ctk.CTkFrame):
 
             cliente_label.bind(
                 "<Button-1>",
-                lambda event, c=cliente: self.show_info_cliente_callback(c))
+                #lambda event, c=cliente: self.show_info_cliente_callback(c)
+                )
 
     def show_error(self, message):
         """
