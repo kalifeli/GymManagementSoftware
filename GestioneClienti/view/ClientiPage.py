@@ -134,8 +134,8 @@ class ClientiPage(ctk.CTkFrame):
 
             cliente_label.bind(
                 "<Button-1>",
-                #lambda event, c=cliente: self.show_info_cliente_callback(c)
-                )
+                lambda event, c=cliente: self.show_info_cliente_callback(c)
+            )
 
     def show_error(self, message):
         """

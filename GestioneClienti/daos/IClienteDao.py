@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
+from GestioneClienti.model.Abbonamento import Abbonamento
 from GestioneClienti.model.Cliente import Cliente
+from GestioneClienti.model.Corso import Corso
 
 class IClienteDAO(ABC):
     @abstractmethod
@@ -18,3 +20,27 @@ class IClienteDAO(ABC):
     @abstractmethod
     def get_all_clienti(self) -> List[Cliente]:
         pass
+
+    @abstractmethod
+    def get_abbonamenti_by_cliente_id(self, cliente_id: str) -> Optional[List[Abbonamento]]:
+        pass
+
+    @abstractmethod
+    def add_abbonamento_to_cliente(self, cliente_id: str, abbonamento: Abbonamento):
+        """
+        Aggiunge un abbonamento a un cliente specifico.
+        """
+        pass
+
+    @abstractmethod
+    def elimina_abbonamento(self, abbonamento_id: str) -> bool:
+        """
+        Elimina un abbonamento specifico.
+        """
+        pass
+
+    def get_all_corsi(self) -> List[Corso]:
+        """
+        Recupera tutti i corsi disponibili.
+        """
+

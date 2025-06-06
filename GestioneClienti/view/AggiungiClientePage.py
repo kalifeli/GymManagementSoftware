@@ -192,6 +192,14 @@ class AggiungiClientePage(ctk.CTkFrame):
         # Assicuro che la riga 4 possa crescere se necessario
         self.content_frame.grid_rowconfigure(4, weight=0)
 
+        self.error_label = ctk.CTkLabel(
+            master=self.content_frame,
+            text="",
+            font=ctk.CTkFont(size=14),
+            text_color="#ff5555"  # rosso per gli errori
+            )
+        self.error_label.grid(row=8, column=0, columnspan=2, sticky="ew", padx=10, pady=(5, 0))
+
 
 
     def _on_salva(self):
@@ -199,6 +207,9 @@ class AggiungiClientePage(ctk.CTkFrame):
         Logica per salvare il cliente.
         Qui dovresti implementare la logica per validare i dati e salvarli nel database.
         """
+        # Svuota la label degli errori all'inizio
+        self.error_label.configure(text="")
+
         nome = self.nome_entry.get()
         cognome = self.cognome_entry.get()
         email = self.email_entry.get()
@@ -208,7 +219,7 @@ class AggiungiClientePage(ctk.CTkFrame):
 
         # Validazione e salvataggio del cliente
         if not nome or not cognome or not email:
-            print(title="Errore", message="Nome, Cognome ed Email sono obbligatori.")
+            self.error_label.configure(text="Nome, Cognome ed Email sono obbligatori.")
             return
 
         cliente = Cliente(
@@ -225,7 +236,12 @@ class AggiungiClientePage(ctk.CTkFrame):
             certificatoMedico=""
         )
 
-        self.controller.aggiungi_cliente(cliente)
-        self.back_callback()
+        if self.controller.aggiungi_cliente(cliente):
+            self.error_label.configure(text="")
+            self.back_callback()
+        else:
+            self.error_label.configure(text="Errore durante il salvataggio del cliente. Riprova.")
+            print("Errore durante il salvataggio del cliente.")
+            return
 
 

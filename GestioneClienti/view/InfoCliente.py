@@ -2,7 +2,7 @@ import customtkinter as ctk
 from PIL import Image
 
 class InfoClientePage(ctk.CTkFrame):
-    def __init__(self, master, cliente, controller, back_callback):
+    def __init__(self, master, cliente, controller, back_callback, aggiungi_abbonamento_callback=None):
         """
         master: riferimento al MainView
         cliente: oggetto cliente da visualizzare
@@ -13,8 +13,9 @@ class InfoClientePage(ctk.CTkFrame):
         self.cliente = cliente
         self.controller = controller
         self.back_callback = back_callback
+        self.aggiungi_abbonamento_callback = aggiungi_abbonamento_callback
 
-        self.abbonamenti = self.controller.get_abbonamenti_by_cliente_id(cliente.id)
+        self.abbonamenti = self.controller.get_abbonamenti_by_cliente_id(cliente.id) if cliente else []
 
         # Layout a griglia (2 righe, 1 colonna)
         self.grid_rowconfigure(0, weight=0)  # riga titolo
@@ -96,15 +97,55 @@ class InfoClientePage(ctk.CTkFrame):
             value_label.grid(row=idx, column=1, sticky="w", padx=(0, 10), pady=5)
 
         # Sezione per gli abbonamenti
-        SezioneAbbonamento(
+        self.sezione_abbonamenti = SezioneAbbonamento(
             master=self.content_frame,
-            abbonamenti=self.abbonamenti
-        ).grid(row=2, column=0, sticky="nsew", padx=10, pady=(0, 20))
+            abbonamenti=self.abbonamenti,
+            cliente=self.cliente,
+            controller=self.controller,
+            aggiungi_abbonamento_callback=self.aggiungi_abbonamento_callback
+        )
+        self.sezione_abbonamenti.grid(row=2, column=0, sticky="nsew", padx=10, pady=(0, 20))
+
+        self.elimina_cliente_button = ctk.CTkButton(
+            master=self.content_frame,
+            text="Elimina Cliente",
+            width=150,
+            height=40,
+            corner_radius=8,
+            fg_color="#e74c3c",
+            hover_color="#c0392b",
+            text_color="#ffffff",
+            font=ctk.CTkFont(size=14),
+            command=lambda: self.on_elimina_cliente()
+        )
+        self.elimina_cliente_button.grid(row=3, column=0, sticky="e", padx=(10, 0), pady=(10, 0))
+
+        self.error_label = ctk.CTkLabel(
+            master=self.content_frame,
+            text="",
+            font=ctk.CTkFont(size=14),
+            text_color="#ff5555"  # rosso per gli errori
+            )
+        self.error_label.grid(row=4, column=0, columnspan=2, sticky="ew", padx=10, pady=(5, 0))
+
+    def on_elimina_cliente(self):
+        """
+        Logica per eliminare il cliente.
+        """
+        # Svuota la label degli errori all'inizio
+        self.error_label.configure(text="")
+
+        if self.controller.elimina_cliente(self.cliente.id):
+            self.error_label.configure(text="")
+            self.back_callback()
+        else:
+            self.error_label.configure(text="Errore nell'eliminazione del cliente. Riprova.")
 
 class AbbonamentoCard(ctk.CTkFrame):
-    def __init__(self, master, abbonamento):
+    def __init__(self, master, abbonamento, elimina_abbonamento=None):
         super().__init__(master)
         self.abbonamento = abbonamento
+        self.elimina_callback = elimina_abbonamento
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -128,21 +169,29 @@ class AbbonamentoCard(ctk.CTkFrame):
         )
         self.id_label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 
-        self.data_inizio_label = ctk.CTkLabel(
+        self.corso_label = ctk.CTkLabel(
             master=specifiche_frame,
-            text=f"Inizio: {self.abbonamento.data_inizio.strftime('%d/%m/%Y')}",
+            text=f"Corso: {self.abbonamento.corso}",
             font=ctk.CTkFont(size=14),
             text_color="#ffffff"
         )
-        self.data_inizio_label.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+        self.corso_label.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+
+        self.data_inizio_label = ctk.CTkLabel(
+            master=specifiche_frame,
+            text=f"Inizio: {self.abbonamento.data_inizio}",
+            font=ctk.CTkFont(size=14),
+            text_color="#ffffff"
+        )
+        self.data_inizio_label.grid(row=0, column=2, padx=10, pady=5, sticky="w")
 
         self.data_fine_label = ctk.CTkLabel(
             master=specifiche_frame,
-            text=f"Fine: {self.abbonamento.data_fine.strftime('%d/%m/%Y')}",
+            text=f"Fine: {self.abbonamento.data_fine}",
             font=ctk.CTkFont(size=14),
             text_color="#ffffff"
         )
-        self.data_fine_label.grid(row=0, column=2, padx=10, pady=5, sticky="w")
+        self.data_fine_label.grid(row=0, column=3, padx=10, pady=5, sticky="w")
 
         self.prezzo_label = ctk.CTkLabel(
             master=specifiche_frame,
@@ -150,57 +199,103 @@ class AbbonamentoCard(ctk.CTkFrame):
             font=ctk.CTkFont(size=14),
             text_color="#ffffff"
         )
-        self.prezzo_label.grid(row=0, column=3, padx=10, pady=5, sticky="w")
+        self.prezzo_label.grid(row=0, column=4, padx=10, pady=5, sticky="w")
 
         self.stato_label = ctk.CTkLabel(
             master=specifiche_frame,
-            text=f"Stato: {self.abbonamento.stato.value}",
+            text=f"Stato: {self.abbonamento.stato}",
             font=ctk.CTkFont(size=14, weight="bold"),
             text_color="#ffffff"
         )
-        self.stato_label.grid(row=0, column=4, padx=10, pady=(5, 0), sticky="w")
+        self.stato_label.grid(row=0, column=5, padx=10, pady=(5, 0), sticky="w")
 
-class SezioneAbbonamento(ctk.CTkFrame):
-    def __init__(self, master, abbonamenti=None):
-        super().__init__(master, corner_radius=10)
-
-        self.grid_rowconfigure(0, weight=1)
-
-        self.abbonamenti = abbonamenti
-        titolo = ctk.CTkLabel(
+        self.bottone_elimina = ctk.CTkButton(
             master=self,
-            text="Abbonamenti",
-            font=ctk.CTkFont(size=20, weight="bold"),
-            text_color="#ffffff"
-        )
-
-        titolo.grid(row=0, column=0, padx=10, pady=(10, 5), sticky="n")
-
-        if not self.abbonamenti:
-            self.abbonamenti = []
-            # Se non ci sono abbonamenti, mostro un messaggio
-            no_abbonamenti_label = ctk.CTkLabel(
-                master=self,
-                text="Nessun abbonamento disponibile.",
-                font=ctk.CTkFont(size=16),
-                text_color="#ffffff"
-            )
-            no_abbonamenti_label.grid(row=1, column=0, padx=10, pady=(5, 10), sticky="n")
-
-        for abbonamento in self.abbonamenti:
-            card = AbbonamentoCard(master=self, abbonamento=abbonamento)
-            card.grid(row=self.grid_size()[1], column=0, padx=10, pady=5, sticky="ew")
-        
-        aggiungi_abbonamento_button = ctk.CTkButton(
-            master=self,
-            text="Aggiungi Abbonamento",
-            width=200,
-            height=40,
+            text="Elimina",
+            width=70,
+            height=30,
             corner_radius=8,
-            fg_color="#3a3a4d",
-            hover_color="#4a4a5d",
+            fg_color="#e74c3c",
+            hover_color="#c0392b",
             text_color="#ffffff",
             font=ctk.CTkFont(size=14),
-            #command=self.aggiungi_abbonamento
+            command=lambda:self.elimina_callback(self.abbonamento.id)
         )
-        aggiungi_abbonamento_button.grid(row=self.grid_size()[1], column=0, padx=10, pady=(5, 10), sticky="e")
+        self.bottone_elimina.grid(row=0, column=6, padx=10, pady=(5, 10), sticky="e")
+
+class SezioneAbbonamento(ctk.CTkFrame):
+    def __init__(self, master, abbonamenti=None, cliente=None, controller=None, aggiungi_abbonamento_callback=None):
+        super().__init__(master, corner_radius=10)
+        self.abbonamenti = abbonamenti if abbonamenti else []
+        self.cliente = cliente
+        self.controller = controller
+        self.aggiungi_abbonamento_callback = aggiungi_abbonamento_callback
+
+        self.build_ui()
+
+    def build_ui(self):
+            
+            for widget in self.winfo_children():
+                widget.destroy()
+
+            # Titolo e bottone in una riga orizzontale
+            header_frame = ctk.CTkFrame(self, fg_color="transparent")
+            header_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=(10, 5))
+            header_frame.grid_columnconfigure(0, weight=1)
+            header_frame.grid_columnconfigure(1, weight=0)
+
+            titolo = ctk.CTkLabel(
+                master=header_frame,
+                text="Abbonamenti",
+                font=ctk.CTkFont(size=20, weight="bold"),
+                text_color="#ffffff"
+            )
+            titolo.grid(row=0, column=0, sticky="w")
+
+            aggiungi_abbonamento_button = ctk.CTkButton(
+                master=header_frame,
+                text="Aggiungi Abbonamento",
+                width=200,
+                height=40,
+                corner_radius=8,
+                fg_color="#3a3a4d",
+                hover_color="#4a4a5d",
+                text_color="#ffffff",
+                font=ctk.CTkFont(size=14),
+                command=self.aggiungi_abbonamento_callback
+            )
+            aggiungi_abbonamento_button.grid(row=0, column=1, sticky="e", padx=(10, 0))
+
+            # Area abbonamenti/cards
+            cards_frame = ctk.CTkFrame(self, fg_color="transparent")
+            cards_frame.grid(row=1, column=0, sticky="ew", padx=10, pady=(0, 10))
+            cards_frame.grid_columnconfigure(0, weight=1)
+
+            if not self.abbonamenti:
+                no_abbonamenti_label = ctk.CTkLabel(
+                    master=cards_frame,
+                    text="Nessun abbonamento disponibile.",
+                    font=ctk.CTkFont(size=16),
+                    text_color="#ffffff"
+                )
+                no_abbonamenti_label.grid(row=0, column=0, padx=10, pady=5, sticky="n")
+            else:
+                for idx, abbonamento in enumerate(self.abbonamenti):
+                    elimina_callback = lambda ab_id=abbonamento.id: self.controller.elimina_abbonamento(ab_id)
+                    card = AbbonamentoCard(
+                        master=cards_frame,
+                        abbonamento=abbonamento,
+                        elimina_abbonamento=elimina_callback
+                    )
+                    card.grid(row=idx, column=0, padx=0, pady=5, sticky="ew")
+
+    def refresh_abbonamenti(self):
+        # Aggiorna la lista abbonamenti dal controller
+        self.abbonamenti = self.controller.get_abbonamenti_by_cliente_id(self.cliente.id)
+        self.build_ui()
+
+    def elimina_e_aggiorna(self, abbonamento_id):
+        success = self.controller.elimina_abbonamento(abbonamento_id)
+        if success:
+            self.refresh_abbonamenti()
+

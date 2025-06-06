@@ -1,8 +1,10 @@
 import customtkinter as ctk
 from PIL import Image
 from GestioneClienti.controller.cliente_controller import ClienteController
+from GestioneClienti.view.AggiungiAbbonamentoPage import AggiungiAbbonamentoPage
 from GestioneClienti.view.AggiungiClientePage import AggiungiClientePage
 from GestioneClienti.view.ClientiPage import ClientiPage
+from GestioneClienti.view.InfoCliente import InfoClientePage
 from HomePage import HomePage
 
 class MainView(ctk.CTk):
@@ -38,7 +40,7 @@ class MainView(ctk.CTk):
             controller=None,  # Il controller sarà impostato dopo
             back_callback=self.show_home_page,
             show_aggiungi_cliente_callback= self.show_aggiungi_cliente_page,
-            show_info_cliente_callback=None
+            show_info_cliente_callback=self.show_info_cliente_page
         )
         self.clienti_page.controller = ClienteController(self.clienti_page)
         self.clienti_page.grid(row=0, column=0, sticky="nsew")
@@ -53,6 +55,31 @@ class MainView(ctk.CTk):
         self.aggiungi_cliente_page.controller = ClienteController(self.aggiungi_cliente_page)
         self.aggiungi_cliente_page.grid(row=0, column=0, sticky="nsew")
         self.aggiungi_cliente_page.tkraise()
+
+    def show_info_cliente_page(self, cliente):
+        controller = ClienteController(self)
+        self.info_cliente_page = InfoClientePage(
+            self.container,
+            cliente=cliente,
+            controller=controller, 
+            back_callback=self.show_clienti_page,
+            aggiungi_abbonamento_callback=lambda: self.show_aggiungi_abbonamento_page(cliente)
+        )
+        self.info_cliente_page.controller = ClienteController(self.info_cliente_page)
+        self.info_cliente_page.grid(row=0, column=0, sticky="nsew")
+        self.info_cliente_page.tkraise()
+
+    def show_aggiungi_abbonamento_page(self, cliente):
+        self.aggiungi_abbonamento_page = AggiungiAbbonamentoPage(
+            self.container,
+            cliente=cliente,
+            controller=ClienteController(self),  
+            back_callback=lambda: self.show_info_cliente_page(cliente)
+        )
+        self.aggiungi_abbonamento_page.controller = ClienteController(self.aggiungi_abbonamento_page)
+        self.aggiungi_abbonamento_page.grid(row=0, column=0, sticky="nsew")
+        self.aggiungi_abbonamento_page.tkraise()
+        
 
     
 

@@ -23,8 +23,8 @@ class Corso:
         }
 
     @classmethod
-    def from_dict(data):
-        return Corso(
+    def from_dict(cls,data):
+        return cls(
             id=data.get("id"),
             nome=data.get("nome"),
             descrizione=data.get("descrizione"),

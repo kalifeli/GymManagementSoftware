@@ -13,7 +13,7 @@ class StatoAbbonamento(Enum):
 @dataclass
 class Abbonamento:
     id: str = None
-    cliente_id: str = None
+    id_cliente: str = None
     corso: str = ""
     pacchetto: str = ""
     data_inizio: str = date.today().strftime("dd-mm-yyyy")
@@ -25,7 +25,7 @@ class Abbonamento:
     def to_dict(self):
         return {
             "id": self.id,
-            "cliente_id": self.cliente_id,
+            "id_cliente": self.id_cliente,
             "corso": self.corso,
             "pacchetto": self.pacchetto,
             "data_inizio": self.data_inizio,
@@ -36,10 +36,10 @@ class Abbonamento:
         }
 
     @classmethod
-    def from_dict(data):
-        return Abbonamento(
+    def from_dict(cls, data):
+        return cls(
             id=data.get("id"),
-            cliente_id=data.get("cliente_id"),
+            id_cliente=data.get("id_cliente"),
             corso=data.get("corso"),
             pacchetto=data.get("pacchetto"),
             data_inizio=data.get("data_inizio"),
