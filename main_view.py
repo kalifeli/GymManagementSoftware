@@ -5,6 +5,7 @@ from GestioneClienti.view.AggiungiAbbonamentoPage import AggiungiAbbonamentoPage
 from GestioneClienti.view.AggiungiClientePage import AggiungiClientePage
 from GestioneClienti.view.ClientiPage import ClientiPage
 from GestioneClienti.view.InfoCliente import InfoClientePage
+from GestioneClienti.view.ModificaClientePage import ModificaClientePage
 from HomePage import HomePage
 
 class MainView(ctk.CTk):
@@ -63,7 +64,8 @@ class MainView(ctk.CTk):
             cliente=cliente,
             controller=controller, 
             back_callback=self.show_clienti_page,
-            aggiungi_abbonamento_callback=lambda: self.show_aggiungi_abbonamento_page(cliente)
+            aggiungi_abbonamento_callback=lambda: self.show_aggiungi_abbonamento_page(cliente),
+            modifica_cliente_callback=lambda: self.show_modifica_cliente_page(cliente)
         )
         self.info_cliente_page.controller = ClienteController(self.info_cliente_page)
         self.info_cliente_page.grid(row=0, column=0, sticky="nsew")
@@ -74,12 +76,21 @@ class MainView(ctk.CTk):
             self.container,
             cliente=cliente,
             controller=ClienteController(self),  
-            back_callback=lambda: self.show_info_cliente_page(cliente)
+            back_callback=lambda: self.show_info_cliente_page(cliente),
         )
         self.aggiungi_abbonamento_page.controller = ClienteController(self.aggiungi_abbonamento_page)
         self.aggiungi_abbonamento_page.grid(row=0, column=0, sticky="nsew")
         self.aggiungi_abbonamento_page.tkraise()
-        
-
+    
+    def show_modifica_cliente_page(self, cliente):
+        self.modifica_cliente_page = ModificaClientePage(
+            self.container,
+            controller=ClienteController(self),
+            cliente=cliente,
+            back_callback=lambda: self.show_info_cliente_page(cliente)
+        )
+        self.modifica_cliente_page.controller = ClienteController(self.modifica_cliente_page)
+        self.modifica_cliente_page.grid(row=0, column=0, sticky="nsew")
+        self.modifica_cliente_page.tkraise()
     
 

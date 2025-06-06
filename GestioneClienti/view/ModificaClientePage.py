@@ -1,17 +1,15 @@
-from datetime import datetime
 import customtkinter as ctk
-from PIL import Image
-from GestioneClienti.controller.cliente_controller import ClienteController
-from GestioneClienti.model.Cliente import Cliente, Sesso
 
-class AggiungiClientePage(ctk.CTkFrame):
-    def __init__(self, master, controller, back_callback):
+from GestioneClienti.model.Cliente import Sesso
+
+class ModificaClientePage(ctk.CTkFrame):
+    def __init__(self, master, controller, cliente, back_callback):
         super().__init__(master)
-        self.cliente = None  # Inizializzo cliente come None, sarà creato al salvataggio
-        self.back_callback = back_callback
-        self.controller = controller
 
-        # Frame principale scorrevole
+        self.controller = controller
+        self.cliente = cliente
+        self.back_callback = back_callback
+
         self.content_frame = ctk.CTkScrollableFrame(
             master=self,
             corner_radius=10,
@@ -34,7 +32,7 @@ class AggiungiClientePage(ctk.CTkFrame):
 
         titolo = ctk.CTkLabel(
             master=header_frame,
-            text="Aggiungi Cliente",
+            text="Modifica Dati Cliente",
             font=ctk.CTkFont(size=24, weight="bold"),
             text_color="#ffffff"
         )
@@ -73,9 +71,9 @@ class AggiungiClientePage(ctk.CTkFrame):
         )
         dati_cliente_label.grid(row=0, column=0, columnspan=2, pady=(20, 10), sticky="n")
 
-        # -------------------------
-        # 1) Nome e Cognome (due colonne)
-        # -------------------------
+        # Campi per modificare i dati del cliente
+
+        # Nome 
         nome_label = ctk.CTkLabel(
             master=dati_frame,
             text="Nome:",
@@ -83,14 +81,16 @@ class AggiungiClientePage(ctk.CTkFrame):
             text_color="#ffffff"
         )
         nome_label.grid(row=1, column=0, padx=20, pady=(10, 5), sticky="w")
+
         self.nome_entry = ctk.CTkEntry(
             master=dati_frame,
-            placeholder_text="Inserisci nome",
+            placeholder_text= self.cliente.nome if self.cliente else "Inserisci nome",
             corner_radius=8
         )
-        # Si estende in orizzontale
+
         self.nome_entry.grid(row=2, column=0, padx=20, pady=5, sticky="ew")
 
+        # Cognome
         cognome_label = ctk.CTkLabel(
             master=dati_frame,
             text="Cognome:",
@@ -100,14 +100,13 @@ class AggiungiClientePage(ctk.CTkFrame):
         cognome_label.grid(row=1, column=1, padx=20, pady=(10, 5), sticky="w")
         self.cognome_entry = ctk.CTkEntry(
             master=dati_frame,
-            placeholder_text="Inserisci cognome",
+            placeholder_text= self.cliente.cognome if self.cliente else "Inserisci cognome",
             corner_radius=8
         )
         self.cognome_entry.grid(row=2, column=1, padx=20, pady=5, sticky="ew")
 
-        # -------------------------
-        # 2) Email e Telefono (due colonne)
-        # -------------------------
+        # Email
+
         email_label = ctk.CTkLabel(
             master=dati_frame,
             text="Email:",
@@ -122,6 +121,8 @@ class AggiungiClientePage(ctk.CTkFrame):
         )
         self.email_entry.grid(row=4, column=0, padx=20, pady=5, sticky="ew")
 
+        # Telefono
+
         telefono_label = ctk.CTkLabel(
             master=dati_frame,
             text="Telefono:",
@@ -129,16 +130,16 @@ class AggiungiClientePage(ctk.CTkFrame):
             text_color="#ffffff"
         )
         telefono_label.grid(row=3, column=1, padx=20, pady=(10, 5), sticky="w")
+
         self.telefono_entry = ctk.CTkEntry(
             master=dati_frame,
-            placeholder_text="+39 123 4567890",
+            placeholder_text= self.cliente.telefono if self.cliente else "Inserisci telefono",
             corner_radius=8
         )
         self.telefono_entry.grid(row=4, column=1, padx=20, pady=5, sticky="ew")
 
-        # -------------------------
-        # 3) Data di Nascita e Sesso (due colonne)
-        # -------------------------
+        # Data Nascita
+
         data_nascita_label = ctk.CTkLabel(
             master=dati_frame,
             text="Data di Nascita:",
@@ -153,6 +154,8 @@ class AggiungiClientePage(ctk.CTkFrame):
         )
         self.data_nascita_entry.grid(row=6, column=0, padx=20, pady=5, sticky="ew")
 
+        # Sesso
+
         sesso_label = ctk.CTkLabel(
             master=dati_frame,
             text="Sesso:",
@@ -160,7 +163,7 @@ class AggiungiClientePage(ctk.CTkFrame):
             text_color="#ffffff"
         )
         sesso_label.grid(row=5, column=1, padx=20, pady=(10, 5), sticky="w")
-        self.sesso_var = ctk.StringVar(value=Sesso.MASCHIO.value)
+        self.sesso_var = ctk.StringVar(value=cliente.sesso)
         self.sesso_menu = ctk.CTkOptionMenu(
             master=dati_frame,
             variable=self.sesso_var,
@@ -172,10 +175,10 @@ class AggiungiClientePage(ctk.CTkFrame):
         # Riservo la riga 7 per spaziatura flessibile
         dati_frame.grid_rowconfigure(7, weight=1)
 
-        
+        # Pulsante per salvare le modifiche
         salva_button = ctk.CTkButton(
             master=self.content_frame,
-            text="Salva Cliente",
+            text="Salva Modifiche",
             height=40,
             corner_radius=8,
             fg_color="#4a90e2",
@@ -184,12 +187,10 @@ class AggiungiClientePage(ctk.CTkFrame):
             font=ctk.CTkFont(size=16, weight="bold"),
             command=self._on_salva
         )
-        # Lo metto nella riga 4, colonna 0 e lo faccio estendere
-        salva_button.grid(row=4, column=0, sticky="ew", padx=10, pady=(10, 20))
+        
+        salva_button.grid(row=7, column=0, sticky="ew", padx=10, pady=(10, 20))
 
-        # Assicuro che la riga 4 possa crescere se necessario
-        self.content_frame.grid_rowconfigure(4, weight=0)
-
+        # Etichetta per errori
         self.error_label = ctk.CTkLabel(
             master=self.content_frame,
             text="",
@@ -198,48 +199,73 @@ class AggiungiClientePage(ctk.CTkFrame):
             )
         self.error_label.grid(row=8, column=0, columnspan=2, sticky="ew", padx=10, pady=(5, 0))
 
-
-
     def _on_salva(self):
         """
-        Logica per salvare il cliente.
-        Qui dovresti implementare la logica per validare i dati e salvarli nel database.
+        Gestisce il salvataggio delle modifiche al cliente.
         """
-        # Svuota la label degli errori all'inizio
-        self.error_label.configure(text="")
+
+        self.error_label.configure(text="")  # Resetta il messaggio di errore
+
+        # Recupero i dati dalle entry
 
         nome = self.nome_entry.get()
+
+        if nome == "":
+            nome = self.cliente.nome  # Mantengo il nome originale se non è stato modificato
+
         cognome = self.cognome_entry.get()
+
+        if cognome == "":
+            cognome = self.cliente.cognome
+
         email = self.email_entry.get()
+        if email == "":
+            email = self.cliente.email
+
         telefono = self.telefono_entry.get()
+        if telefono == "":
+            telefono = self.cliente.telefono
+
         data_nascita = self.data_nascita_entry.get()
-        sesso = Sesso(self.sesso_var.get())
+        if data_nascita == "":
+            data_nascita = self.cliente.data_nascita
 
-        # Validazione e salvataggio del cliente
-        if not nome or not cognome or not email:
-            self.error_label.configure(text="Nome, Cognome ed Email sono obbligatori.")
-            return
+        sesso = self.sesso_var.get()
 
-        cliente = Cliente(
-            id=None,  # L'ID sarà generato automaticamente
-            nome=nome,
-            cognome=cognome,
-            email=email,
-            telefono=telefono,
-            data_nascita=data_nascita,
-            sesso=sesso.value,
-            scheda="",
-            abbonamento="",
-            foto="",
-            certificatoMedico=""
-        )
 
-        if self.controller.aggiungi_cliente(cliente):
-            self.error_label.configure(text="")
-            self.back_callback()
-        else:
-            self.error_label.configure(text="Errore durante il salvataggio del cliente. Riprova.")
-            print("Errore durante il salvataggio del cliente.")
-            return
+        try:
+            # Aggiorno i dati del cliente
+            self.cliente.nome = nome
+            self.cliente.cognome = cognome
+            self.cliente.telefono = telefono
+            self.cliente.data_nascita = data_nascita
+            self.cliente.sesso = sesso
+
+            # Chiamo il metodo di salvataggio del controller
+            result = self.controller.modifica_cliente(self.cliente)
+
+            if result:
+                self.error_label.configure(text="Cliente aggiornato con successo.", text_color="#00ff00")
+                # Potrei voler tornare alla pagina precedente o mostrare un messaggio di successo
+                self.back_callback()
+            else:
+                self.error_label.configure(text="Errore durante l'aggiornamento del cliente.")
+        except Exception as e:
+            print(f"Errore durante il salvataggio: {e}")
+            self.error_label.configure(text=f"Errore: {str(e)}")
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
 
 

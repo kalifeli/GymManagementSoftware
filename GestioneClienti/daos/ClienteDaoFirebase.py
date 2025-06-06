@@ -115,6 +115,18 @@ class ClienteDaoFirebase(IClienteDAO):
             data = doc.to_dict()
             corsi.append(Corso.from_dict(data))
         return corsi
+    
+    def trova_cliente_by_nome(self, nome: str) -> List[Cliente]:
+        """
+        Trova i clienti che corrispondono al nome specificato e li restituisce come lista di oggetti Cliente.
+        """
+        query = self.collection_clienti.where("nome", "==", nome).stream()
+        clienti = []
+        for doc in query:
+            data = doc.to_dict()
+            data['id'] = doc.id
+            clienti.append(Cliente.from_dict(data))
+        return clienti
 
     
             

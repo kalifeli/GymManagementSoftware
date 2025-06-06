@@ -22,6 +22,13 @@ class IClienteDAO(ABC):
         pass
 
     @abstractmethod
+    def trova_cliente_by_nome(self, nome: str) -> List[Cliente]:
+        """
+        Trova i clienti che corrispondono al nome specificato e li restituisce come lista di oggetti Cliente.
+        """
+        pass
+
+    @abstractmethod
     def get_abbonamenti_by_cliente_id(self, cliente_id: str) -> Optional[List[Abbonamento]]:
         pass
 

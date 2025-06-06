@@ -2,7 +2,7 @@ import customtkinter as ctk
 from PIL import Image
 
 class InfoClientePage(ctk.CTkFrame):
-    def __init__(self, master, cliente, controller, back_callback, aggiungi_abbonamento_callback=None):
+    def __init__(self, master, cliente, controller, back_callback, aggiungi_abbonamento_callback=None, modifica_cliente_callback=None):
         """
         master: riferimento al MainView
         cliente: oggetto cliente da visualizzare
@@ -14,6 +14,7 @@ class InfoClientePage(ctk.CTkFrame):
         self.controller = controller
         self.back_callback = back_callback
         self.aggiungi_abbonamento_callback = aggiungi_abbonamento_callback
+        self.modifica_cliente_callback = modifica_cliente_callback
 
         self.abbonamenti = self.controller.get_abbonamenti_by_cliente_id(cliente.id) if cliente else []
 
@@ -54,8 +55,11 @@ class InfoClientePage(ctk.CTkFrame):
             width=600,
             height=400
         )
-        self.content_frame.grid_rowconfigure(0, weight=1)  # Permette alla riga di espandersi
-        self.content_frame.grid_columnconfigure(0, weight=1)  # Permette alla colonna di espandersi
+        self.content_frame.grid_columnconfigure(0, weight=1)
+        self.content_frame.grid_columnconfigure(1, weight=1)
+        self.content_frame.grid_rowconfigure(0, weight=0)
+        self.content_frame.grid_rowconfigure(1, weight=0)
+        self.content_frame.grid_rowconfigure(2, weight=1)
         self.content_frame.grid(row=1, column=0, padx=20, pady=(5, 20), sticky="nsew")
 
         # Frame per le informazioni del cliente
@@ -64,12 +68,12 @@ class InfoClientePage(ctk.CTkFrame):
             corner_radius=10,
             fg_color="#44445a"
         )
-        info_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
-        info_frame.grid_rowconfigure(0, weight=1)  # Permette alla riga di espandersi
-        info_frame.grid_columnconfigure(0, weight=1)  # Permette alla colonna di espandersi
+        info_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+        info_frame.grid_columnconfigure(0, weight=1)
+        info_frame.grid_columnconfigure(1, weight=1)
 
         # Etichette per le informazioni del cliente
-        
+
         labels = [
             ("Nome:", cliente.nome),
             ("Cognome:", cliente.cognome),
@@ -104,7 +108,8 @@ class InfoClientePage(ctk.CTkFrame):
             controller=self.controller,
             aggiungi_abbonamento_callback=self.aggiungi_abbonamento_callback
         )
-        self.sezione_abbonamenti.grid(row=2, column=0, sticky="nsew", padx=10, pady=(0, 20))
+        self.sezione_abbonamenti.grid(row=2, column=0, columnspan=2, sticky="nsew", padx=10, pady=(0, 20))
+
 
         self.elimina_cliente_button = ctk.CTkButton(
             master=self.content_frame,
@@ -118,7 +123,21 @@ class InfoClientePage(ctk.CTkFrame):
             font=ctk.CTkFont(size=14),
             command=lambda: self.on_elimina_cliente()
         )
-        self.elimina_cliente_button.grid(row=3, column=0, sticky="e", padx=(10, 0), pady=(10, 0))
+
+        self.modifica_cliente_button = ctk.CTkButton(
+            master=self.content_frame,
+            text="Modifica Cliente",
+            width=150,
+            height=40,
+            corner_radius=8,
+            fg_color="#3a3a4d",
+            hover_color="#4a4a5d",
+            text_color="#ffffff",
+            font=ctk.CTkFont(size=14),
+            command=self.modifica_cliente_callback
+        )
+        self.modifica_cliente_button.grid(row=3, column=0, sticky="e", padx=(0, 10), pady=(10, 0))
+        self.elimina_cliente_button.grid(row=3, column=1, sticky="w", padx=(10, 0), pady=(10, 0))
 
         self.error_label = ctk.CTkLabel(
             master=self.content_frame,
@@ -242,7 +261,7 @@ class SezioneAbbonamento(ctk.CTkFrame):
             header_frame = ctk.CTkFrame(self, fg_color="transparent")
             header_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=(10, 5))
             header_frame.grid_columnconfigure(0, weight=1)
-            header_frame.grid_columnconfigure(1, weight=0)
+            header_frame.grid_columnconfigure(1, weight=0)  # il bottone non si espande
 
             titolo = ctk.CTkLabel(
                 master=header_frame,

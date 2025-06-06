@@ -48,7 +48,7 @@ class Cliente:
             telefono=data.get("telefono", ""),
             foto=data.get("foto", ""),
             scheda=data.get("scheda", ""),
-            certificato_medico=data.get("certificatoMedico", ""),
+            certificatoMedico=data.get("certificatoMedico", ""),
             abbonamento=data.get("abbonamento", "")
         )
 

@@ -21,6 +21,16 @@ class ClienteController:
         except Exception as e:
             print(f"Errore nel caricamento dei clienti: {str(e)}")
 
+    def load_ricerca_clienti(self, clienti):
+        """
+        Carica i clienti dalla DAO e li visualizza nella view.
+        """
+        try:
+            print("Caricamento clienti dalla DAO...")
+            self.view.visualizzaClienti(clienti)
+        except Exception as e:
+            print(f"Errore nel caricamento dei clienti: {str(e)}")
+
     def aggiungi_cliente(self, cliente):
         """
         Aggiunge un nuovo cliente tramite la DAO e ricarica la lista dei clienti.
@@ -57,9 +67,13 @@ class ClienteController:
         Trova i clienti che corrispondono al nome specificato e li restituisce come lista di oggetti Cliente.
         """
         try:
-            clienti_dict = self.dao.trova_cliente_by_nome(nome)
-            clienti = [Cliente.from_dict(c['id'], c) for c in clienti_dict]
-            return clienti
+            clienti = self.dao.trova_cliente_by_nome(nome)
+            if clienti:
+                print(f"Clienti trovati per nome '{nome}': {clienti}")
+                return clienti
+            else:
+                print(f"Nessun cliente trovato con il nome '{nome}'.")
+                return []
         except Exception as e:
             print(f"Errore nella ricerca del cliente: {str(e)}")
             return []

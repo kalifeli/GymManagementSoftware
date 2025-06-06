@@ -66,6 +66,20 @@ class ClientiPage(ctk.CTkFrame):
         )
         self.search_entry.grid(row=1, column=0, padx=10, pady=(20, 10), sticky="ew")
 
+        self.search_button = ctk.CTkButton(
+            master=self.sidebar_frame,
+            text="Cerca",
+            width=40,
+            height=40,
+            corner_radius=8,
+            fg_color="#4a90e2",
+            hover_color="#357ab8",
+            text_color="#ffffff",
+            font=ctk.CTkFont(size=16),
+            command=lambda: self.on_search(self.search_var.get())  # collega la funzione di ricerca
+        )
+        self.search_button.grid(row=1, column=1, padx=(0, 10), pady=(20, 10), sticky="ew")
+
 
         # ── Titolo secondario centrato ──────────────────────────────
         subtitle = ctk.CTkLabel(
@@ -115,7 +129,7 @@ class ClientiPage(ctk.CTkFrame):
         """
         Visualizza la lista dei clienti nella scrollable_frame.
         """
-        self.all_clienti = clienti 
+        self.all_clienti = clienti
         # Pulisce il contenuto precedente
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
@@ -136,6 +150,19 @@ class ClientiPage(ctk.CTkFrame):
                 "<Button-1>",
                 lambda event, c=cliente: self.show_info_cliente_callback(c)
             )
+    
+    def on_search(self, nome:str):
+        """
+        Gestisce l'evento di ricerca quando l'utente preme Invio nella barra di ricerca.
+        """
+        if(nome == ""):
+            self.controller.load_clienti()
+        else:
+            clienti_trovati = self.controller.trova_cliente_by_nome(nome)
+            if clienti_trovati:
+                self.controller.load_ricerca_clienti(clienti_trovati)
+            else:
+                self.show_error(f"Nessun cliente trovato con il nome '{nome}'.")
 
     def show_error(self, message):
         """
@@ -160,22 +187,6 @@ class ClientiPage(ctk.CTkFrame):
             command=error_popup.destroy
         )
         close_button.pack(pady=(0, 20))
-
-    def _on_search(self, event=None):
-        query = self.search_var.get().strip().lower()
-        # Recupera la lista completa dei clienti dal controller o da una variabile
-        # Supponiamo che tu abbia self.all_clienti come lista completa
-        if not hasattr(self, "all_clienti"):
-            return  # Niente da filtrare
-
-        if not query:
-            filtered = self.all_clienti
-        else:
-            filtered = [
-                c for c in self.all_clienti
-                if query in c.nome.lower() or query in c.cognome.lower() or query in c.email.lower()
-            ]
-        self.visualizzaClienti(filtered)
 
     
     
