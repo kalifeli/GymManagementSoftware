@@ -81,6 +81,7 @@ class InfoClientePage(ctk.CTkFrame):
             ("Telefono:", cliente.telefono),
             ("Data di Nascita:", cliente.data_nascita.strftime('%d/%m/%Y') if hasattr(cliente.data_nascita, 'strftime') else str(cliente.data_nascita)),
             ("Sesso:", cliente.sesso.value if hasattr(cliente.sesso, 'value') else str(cliente.sesso)),
+            ("Certificato Medico:", "Sì" if cliente.certificatoMedico else "No"),
         ]
 
         for idx, (label_text, value) in enumerate(labels):
@@ -190,7 +191,7 @@ class AbbonamentoCard(ctk.CTkFrame):
 
         self.corso_label = ctk.CTkLabel(
             master=specifiche_frame,
-            text=f"Corso: {self.abbonamento.corso}",
+            text=f"Corso: {self.abbonamento.corso}" if self.abbonamento.corso else f"Pacchetto: {self.abbonamento.pacchetto}",
             font=ctk.CTkFont(size=14),
             text_color="#ffffff"
         )
@@ -250,6 +251,8 @@ class SezioneAbbonamento(ctk.CTkFrame):
         self.controller = controller
         self.aggiungi_abbonamento_callback = aggiungi_abbonamento_callback
 
+        self.controller.controlla_scadenze_abbonamenti(self.abbonamenti)
+
         self.build_ui()
 
     def build_ui(self):
@@ -300,7 +303,7 @@ class SezioneAbbonamento(ctk.CTkFrame):
                 no_abbonamenti_label.grid(row=0, column=0, padx=10, pady=5, sticky="n")
             else:
                 for idx, abbonamento in enumerate(self.abbonamenti):
-                    elimina_callback = lambda ab_id=abbonamento.id: self.controller.elimina_abbonamento(ab_id)
+                    elimina_callback = lambda ab_id=abbonamento.id: self.elimina_e_aggiorna(ab_id)
                     card = AbbonamentoCard(
                         master=cards_frame,
                         abbonamento=abbonamento,

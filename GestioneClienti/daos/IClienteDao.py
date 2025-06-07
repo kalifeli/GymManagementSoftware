@@ -3,6 +3,7 @@ from typing import List, Optional
 from GestioneClienti.model.Abbonamento import Abbonamento
 from GestioneClienti.model.Cliente import Cliente
 from GestioneClienti.model.Corso import Corso
+from GestioneClienti.model.Pacchetto import Pacchetto
 
 class IClienteDAO(ABC):
     @abstractmethod
@@ -46,8 +47,30 @@ class IClienteDAO(ABC):
         """
         pass
 
+    @abstractmethod
     def get_all_corsi(self) -> List[Corso]:
         """
         Recupera tutti i corsi disponibili.
         """
+
+    @abstractmethod
+    def update_cliente(self, cliente: Cliente) -> bool:
+        """
+        Aggiorna i dati di un cliente esistente.
+        """
+        pass
+
+    @abstractmethod
+    def get_all_pacchetti(self) -> List[Pacchetto]:
+        """
+        Recupera tutti i pacchetti di abbonamento disponibili.
+        """
+        pass
+
+    @abstractmethod
+    def controlla_scadenze_abbonamenti(self, abbonamenti: List[Abbonamento]):
+        """
+        Controlla se l'abbonamento di un cliente è scaduto.
+        """
+        pass
 

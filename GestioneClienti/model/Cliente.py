@@ -16,9 +16,8 @@ class Cliente:
     data_nascita: str = ""
     email: str = ""
     telefono: str = ""
-    foto: str = "" 
     scheda: str = ""  # Riferimento alla scheda associata al cliente
-    certificatoMedico: str = ""  # Riferimento al certificato medico del cliente
+    certificatoMedico: bool = False  # Indica se il cliente ha un certificato medico valido
     abbonamento: str = ""  # Riferimento all'abbonamento del cliente
 
     def to_dict(self):
@@ -30,7 +29,6 @@ class Cliente:
             "data_nascita": self.data_nascita,
             "email": self.email,
             "telefono": self.telefono,
-            "foto": self.foto,
             "scheda": self.scheda,
             "certificatoMedico": self.certificatoMedico,
             "abbonamento": self.abbonamento
@@ -46,7 +44,6 @@ class Cliente:
             data_nascita=data.get("data_nascita", ""),
             email=data.get("email", ""),
             telefono=data.get("telefono", ""),
-            foto=data.get("foto", ""),
             scheda=data.get("scheda", ""),
             certificatoMedico=data.get("certificatoMedico", ""),
             abbonamento=data.get("abbonamento", "")

@@ -1,9 +1,11 @@
 
+from datetime import datetime
 from typing import List, Optional
 from GestioneClienti.daos.IClienteDao import IClienteDAO
-from GestioneClienti.model.Abbonamento import Abbonamento
+from GestioneClienti.model.Abbonamento import Abbonamento, StatoAbbonamento
 from GestioneClienti.model.Cliente import Cliente
 from GestioneClienti.model.Corso import Corso
+from GestioneClienti.model.Pacchetto import Pacchetto
 from utils.firebase_client import get_firestore_client
 
 class ClienteDaoFirebase(IClienteDAO):
@@ -13,6 +15,7 @@ class ClienteDaoFirebase(IClienteDAO):
         self.collection_clienti = self.client.collection("clienti")
         self.collection_abbonamenti = self.client.collection("abbonamenti")
         self.collection_corsi = self.client.collection("corsi")
+        self.collection_pacchetti = self.client.collection("pacchetti")
 
 
     def aggiungi_cliente(self, cliente: Cliente):
@@ -127,6 +130,58 @@ class ClienteDaoFirebase(IClienteDAO):
             data['id'] = doc.id
             clienti.append(Cliente.from_dict(data))
         return clienti
+    
+    def update_cliente(self, cliente: Cliente) -> bool:
+        """
+        Aggiorna in Firestore il documento del cliente con i campi
+        della nuova istanza `cliente`.
+        """
+        try:
+            # Controllo se esiste già un cliente con la stessa email
+            query = self.collection_clienti.where("email", "==", cliente.email).stream()
+            for doc in query:
+                if doc.id != cliente.id:
+                    print(f"Cliente già presente con email: {cliente.email}")
+                    return False  # Cliente già esistente, non lo aggiorna
+            # prendo il documento del cliente
+            doc_ref = self.collection_clienti.document(cliente.id)
+            # converto l'istanza del clienti in un dizionario
+            dati = cliente.to_dict()
+            # aggiorno il documento con i nuovi dati
+            doc_ref.update(dati)
+            return True
+        except Exception as e:
+            print(f"Errore nell'aggiornamento del cliente: {e}")
+            return False
+    
+    def get_all_pacchetti(self) -> List[Pacchetto]:
+        """
+        Recupera tutti i pacchetti di abbonamento disponibili.
+        """
+        docs = self.collection_pacchetti.stream()
+        pacchetti = []
+        for doc in docs:
+            data = doc.to_dict()
+            pacchetti.append(Pacchetto.from_dict(data))
+        return pacchetti
+    
+    def controlla_scadenze_abbonamenti(self, abbonamenti: List[Abbonamento]):
+        """
+        Controlla se l'abbonamento di un cliente è scaduto.
+        """
+        try:
+            formato = "%d/%m/%Y"
+            for abbonamento in abbonamenti:
+                data_fine = datetime.strptime(abbonamento.data_fine, formato)
+                oggi = datetime.today()
+
+                if data_fine < oggi:
+                    abbonamento.stato = StatoAbbonamento.SCADUTO.value
+                    doc_ref = self.collection_abbonamenti.document(abbonamento.id)
+                    doc_ref.update({"stato": abbonamento.stato})  # Aggiorna lo stato dell'abbonamento
+        except Exception as e:
+            print(f"Errore nel controllo della scadenza dell'abbonamento: {e}")
+
 
     
             

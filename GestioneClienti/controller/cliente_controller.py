@@ -1,3 +1,4 @@
+from typing import List
 from GestioneClienti.model.Cliente import Cliente
 from GestioneClienti.daos.ClienteDaoFirebase import ClienteDaoFirebase
 from GestioneClienti.model.Abbonamento import Abbonamento
@@ -98,8 +99,6 @@ class ClienteController:
             success = self.dao.elimina_abbonamento(abbonamento_id)
             if success:
                 print(f"Abbonamento {abbonamento_id} eliminato con successo.")
-                # Ricarica gli abbonamenti dopo l'eliminazione
-
             else:
                 print(f"Errore nell'eliminazione dell'abbonamento {abbonamento_id}.")
             return success
@@ -129,3 +128,40 @@ class ClienteController:
         except Exception as e:
             print(f"Errore nell'aggiunta dell'abbonamento: {str(e)}")
             return False
+        
+    def modifica_cliente(self, cliente: Cliente):
+        """
+        Aggiorna i dati di un cliente esistente.
+        """
+        try:
+            result = self.dao.update_cliente(cliente)
+            if result:
+                print(f"Cliente {cliente.id} aggiornato con successo.")
+                self.load_clienti()  # Ricarica la lista dei clienti dopo l'aggiornamento
+                return True
+            else:
+                print(f"Errore nell'aggiornamento del cliente.")
+                return False
+        except Exception as e:
+            print(f"Errore nell'aggiornamento del cliente: {str(e)}")
+            return False
+    
+    def get_all_pacchetti(self):
+        """
+        Recupera tutti i pacchetti di abbonamento disponibili.
+        """
+        try:
+            pacchetti = self.dao.get_all_pacchetti()
+            return pacchetti if pacchetti else []
+        except Exception as e:
+            print(f"Errore nel recupero dei pacchetti: {str(e)}")
+            return []
+
+    def controlla_scadenze_abbonamenti(self, abbonamenti: List[Abbonamento]):
+        """
+        Controlla la scadenza degli abbonamenti di un cliente specifico.
+        """
+        try:
+            self.dao.controlla_scadenze_abbonamenti(abbonamenti)
+        except Exception as e:
+            print(f"Errore nel controllo della scadenza degli abbonamenti: {str(e)}")

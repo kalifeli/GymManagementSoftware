@@ -10,6 +10,8 @@ class AggiungiAbbonamentoPage(ctk.CTkFrame):
         self.back_callback = back_callback
         self.cliente = cliente  # Il cliente a cui aggiungere l'abbonamento
         self.corsi = self.controller.get_all_corsi() # Lista dei corsi disponibili
+        self.pacchetti = self.controller.get_all_pacchetti() # Lista dei pacchetti disponibili
+        print("Pacchetti caricati:", self.pacchetti)
 
         #Frame principale scorrevole
         self.content_frame = ctk.CTkScrollableFrame(
@@ -216,8 +218,8 @@ class AggiungiAbbonamentoPage(ctk.CTkFrame):
             self.sotto_opzioni_valori = [corso.nome for corso in self.corsi] if self.corsi else []
             self.sotto_opzioni_prezzi = [corso.prezzo for corso in self.corsi] if self.corsi else []
         elif scelta == "Pacchetto":
-            self.sotto_opzioni_valori = ["Base", "Premium", "Gold"]
-            self.sotto_opzioni_prezzi = [50, 100, 150]
+            self.sotto_opzioni_valori = [pacchetto.nome for pacchetto in self.pacchetti] if self.pacchetti else []
+            self.sotto_opzioni_prezzi = [pacchetto.prezzo for pacchetto in self.pacchetti] if self.pacchetti else []
         else:
             self.sotto_opzioni_valori = []
             self.sotto_opzioni_prezzi = []

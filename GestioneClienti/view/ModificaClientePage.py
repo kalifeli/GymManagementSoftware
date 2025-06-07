@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from copy import deepcopy
 
 from GestioneClienti.model.Cliente import Sesso
 
@@ -19,6 +20,8 @@ class ModificaClientePage(ctk.CTkFrame):
 
         # Configuro la colonna 0 di content_frame per espandersi
         self.content_frame.grid_columnconfigure(0, weight=1)
+
+        self.cert_var = ctk.BooleanVar(value=self.cliente.certificatoMedico if self.cliente else False)
 
         # Header (titolo + Indietro) su un'unica riga
         header_frame = ctk.CTkFrame(
@@ -172,6 +175,17 @@ class ModificaClientePage(ctk.CTkFrame):
         )
         self.sesso_menu.grid(row=6, column=1, padx=20, pady=5, sticky="ew")
 
+        # Checkbox per il certificato medico
+        self.cert_checkbox = ctk.CTkCheckBox(
+            master=dati_frame,
+            text="Certificato Medico",
+            variable=self.cert_var,
+            font=ctk.CTkFont(size=14),
+        )
+        self.cert_checkbox.grid(row=7, column=0, columnspan=2, padx=20, pady=(10, 5), sticky="w")
+
+
+
         # Riservo la riga 7 per spaziatura flessibile
         dati_frame.grid_rowconfigure(7, weight=1)
 
@@ -187,8 +201,7 @@ class ModificaClientePage(ctk.CTkFrame):
             font=ctk.CTkFont(size=16, weight="bold"),
             command=self._on_salva
         )
-        
-        salva_button.grid(row=7, column=0, sticky="ew", padx=10, pady=(10, 20))
+        salva_button.grid(row=8, column=0, sticky="ew", padx=10, pady=(10, 20))
 
         # Etichetta per errori
         self.error_label = ctk.CTkLabel(
@@ -196,8 +209,8 @@ class ModificaClientePage(ctk.CTkFrame):
             text="",
             font=ctk.CTkFont(size=14),
             text_color="#ff5555"  # rosso per gli errori
-            )
-        self.error_label.grid(row=8, column=0, columnspan=2, sticky="ew", padx=10, pady=(5, 0))
+        )
+        self.error_label.grid(row=9, column=0, columnspan=2, sticky="ew", padx=10, pady=(5, 0))
 
     def _on_salva(self):
         """
@@ -206,47 +219,40 @@ class ModificaClientePage(ctk.CTkFrame):
 
         self.error_label.configure(text="")  # Resetta il messaggio di errore
 
-        # Recupero i dati dalle entry
-
-        nome = self.nome_entry.get()
-
-        if nome == "":
-            nome = self.cliente.nome  # Mantengo il nome originale se non è stato modificato
-
-        cognome = self.cognome_entry.get()
-
-        if cognome == "":
-            cognome = self.cliente.cognome
-
-        email = self.email_entry.get()
-        if email == "":
-            email = self.cliente.email
-
-        telefono = self.telefono_entry.get()
-        if telefono == "":
-            telefono = self.cliente.telefono
-
-        data_nascita = self.data_nascita_entry.get()
-        if data_nascita == "":
-            data_nascita = self.cliente.data_nascita
-
+         # Recupero i dati dalle entry
+        nome = self.nome_entry.get() or self.cliente.nome
+        cognome = self.cognome_entry.get() or self.cliente.cognome
+        email = self.email_entry.get() or self.cliente.email
+        telefono = self.telefono_entry.get() or self.cliente.telefono
+        data_nascita = self.data_nascita_entry.get() or self.cliente.data_nascita
         sesso = self.sesso_var.get()
-
+        certificatoMedico = self.cert_var.get()
 
         try:
-            # Aggiorno i dati del cliente
-            self.cliente.nome = nome
-            self.cliente.cognome = cognome
-            self.cliente.telefono = telefono
-            self.cliente.data_nascita = data_nascita
-            self.cliente.sesso = sesso
+            # Crea una copia temporanea del cliente
+            cliente_modificato = deepcopy(self.cliente)
+            cliente_modificato.nome = nome
+            cliente_modificato.cognome = cognome
+            cliente_modificato.telefono = telefono
+            cliente_modificato.email = email
+            cliente_modificato.data_nascita = data_nascita
+            cliente_modificato.sesso = sesso
+            cliente_modificato.certificatoMedico = certificatoMedico
 
-            # Chiamo il metodo di salvataggio del controller
-            result = self.controller.modifica_cliente(self.cliente)
+            # Prova a salvare la copia
+            result = self.controller.modifica_cliente(cliente_modificato)
 
             if result:
+            # Solo ora aggiorna l'oggetto in memoria
+                self.cliente.nome = nome
+                self.cliente.cognome = cognome
+                self.cliente.telefono = telefono
+                self.cliente.email = email
+                self.cliente.data_nascita = data_nascita
+                self.cliente.sesso = sesso
+                self.cliente.certificatoMedico = certificatoMedico
+
                 self.error_label.configure(text="Cliente aggiornato con successo.", text_color="#00ff00")
-                # Potrei voler tornare alla pagina precedente o mostrare un messaggio di successo
                 self.back_callback()
             else:
                 self.error_label.configure(text="Errore durante l'aggiornamento del cliente.")

@@ -11,6 +11,8 @@ class AggiungiClientePage(ctk.CTkFrame):
         self.back_callback = back_callback
         self.controller = controller
 
+        self.cert_var = ctk.BooleanVar()  # Variabile per il certificato medico
+
         # Frame principale scorrevole
         self.content_frame = ctk.CTkScrollableFrame(
             master=self,
@@ -172,6 +174,15 @@ class AggiungiClientePage(ctk.CTkFrame):
         # Riservo la riga 7 per spaziatura flessibile
         dati_frame.grid_rowconfigure(7, weight=1)
 
+        # Checkbox per il certificato medico
+        self.cert_checkbox = ctk.CTkCheckBox(
+            master=dati_frame,
+            text="Certificato Medico",
+            variable=self.cert_var,
+            font=ctk.CTkFont(size=14),
+        )
+        self.cert_checkbox.grid(row=7, column=0, columnspan=2, padx=20, pady=(10, 5), sticky="w")
+
         
         salva_button = ctk.CTkButton(
             master=self.content_frame,
@@ -184,10 +195,8 @@ class AggiungiClientePage(ctk.CTkFrame):
             font=ctk.CTkFont(size=16, weight="bold"),
             command=self._on_salva
         )
-        # Lo metto nella riga 4, colonna 0 e lo faccio estendere
-        salva_button.grid(row=4, column=0, sticky="ew", padx=10, pady=(10, 20))
+        salva_button.grid(row=8, column=0, sticky="ew", padx=10, pady=(10, 20))
 
-        # Assicuro che la riga 4 possa crescere se necessario
         self.content_frame.grid_rowconfigure(4, weight=0)
 
         self.error_label = ctk.CTkLabel(
@@ -196,7 +205,7 @@ class AggiungiClientePage(ctk.CTkFrame):
             font=ctk.CTkFont(size=14),
             text_color="#ff5555"  # rosso per gli errori
             )
-        self.error_label.grid(row=8, column=0, columnspan=2, sticky="ew", padx=10, pady=(5, 0))
+        self.error_label.grid(row=9, column=0, columnspan=2, sticky="ew", padx=10, pady=(5, 0))
 
 
 
@@ -214,6 +223,7 @@ class AggiungiClientePage(ctk.CTkFrame):
         telefono = self.telefono_entry.get()
         data_nascita = self.data_nascita_entry.get()
         sesso = Sesso(self.sesso_var.get())
+        certificatoMedico = self.cert_var.get()
 
         # Validazione e salvataggio del cliente
         if not nome or not cognome or not email:
@@ -230,8 +240,7 @@ class AggiungiClientePage(ctk.CTkFrame):
             sesso=sesso.value,
             scheda="",
             abbonamento="",
-            foto="",
-            certificatoMedico=""
+            certificatoMedico=certificatoMedico
         )
 
         if self.controller.aggiungi_cliente(cliente):
