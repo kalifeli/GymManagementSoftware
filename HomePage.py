@@ -3,13 +3,32 @@ import customtkinter as ctk
 from PIL import Image
 
 class HomePage(ctk.CTkFrame):
-    def __init__(self, master, show_clienti_callback = None, show_contabilità_callback = None):
+    def __init__(self, master, show_clienti_callback = None, show_contabilità_callback = None, logout_callback=None):
         """
         master: riferimento al MainView
         show_clienti_callback: funzione da chiamare quando si clicca "Clienti"
         show_contabilità_callback: funzione da chiamare quando si clicca "Contabilità"
         """
         super().__init__(master)
+
+         # Header frame per il bottone Esci
+        header_frame = ctk.CTkFrame(self, fg_color="transparent")
+        header_frame.grid(row=0, column=0, sticky="ne", padx=20, pady=10)
+        header_frame.grid_columnconfigure(0, weight=1)
+
+        esci_button = ctk.CTkButton(
+            master=header_frame,
+            text="Esci",
+            width=80,
+            height=36,
+            corner_radius=8,
+            fg_color="#e74c3c",
+            hover_color="#c0392b",
+            text_color="#ffffff",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            command=logout_callback
+        )
+        esci_button.grid(row=0, column=1, sticky="e")
 
         # Imposto layout a griglia per questa pagina (1 colonna, 3 righe)
         self.grid_rowconfigure(0, weight=1)  # spazio sopra il titolo

@@ -7,6 +7,7 @@ from GestioneClienti.view.ClientiPage import ClientiPage
 from GestioneClienti.view.InfoCliente import InfoClientePage
 from GestioneClienti.view.ModificaClientePage import ModificaClientePage
 from HomePage import HomePage
+from loginPage import LoginPage
 
 class MainView(ctk.CTk):
     def __init__(self):
@@ -23,17 +24,29 @@ class MainView(ctk.CTk):
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
-        # Istanzia direttamente la HomePage
-        self.home_page = HomePage(self.container, show_clienti_callback=self.show_clienti_page)
-        self.home_page.grid(row=0, column=0, sticky="nsew")
+        self.login_page = LoginPage(
+            self.container,
+            login_gestore_callback=self.show_home_page,
+            login_pt_callback=self.show_pt_page
+        )
+        self.login_page.grid(row=0, column=0, sticky="nsew")
 
-        self.show_home_page()
+        self.show_login_page()
+
+
+    def show_login_page(self):
+        self.login_page.tkraise()
 
     def show_home_page(self):
         self.home_page.tkraise()
 
-   
+    def show_pt_page(self):
+        pass
 
+    def show_home_page(self):
+        self.home_page = HomePage(self.container, show_clienti_callback=self.show_clienti_page, logout_callback=self.show_login_page)
+        self.home_page.grid(row=0, column=0, sticky="nsew")
+        self.home_page.tkraise()
 
     def show_clienti_page(self):
         self.clienti_page = ClientiPage(
