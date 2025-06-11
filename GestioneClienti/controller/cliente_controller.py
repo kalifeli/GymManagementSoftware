@@ -84,7 +84,6 @@ class ClienteController:
         Recupera gli abbonamenti associati a un cliente specifico.
         """
         try:
-            print(f"Chiamata get_abbonamenti_by_cliente_id per cliente_id: {cliente_id}")  # DEBUG
             abbonamenti = self.dao.get_abbonamenti_by_cliente_id(cliente_id)
             return abbonamenti if abbonamenti else []
         except Exception as e:

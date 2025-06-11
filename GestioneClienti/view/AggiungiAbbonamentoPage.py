@@ -179,7 +179,7 @@ class AggiungiAbbonamentoPage(ctk.CTkFrame):
         ).grid(row=6, column=0, sticky="w", padx=10, pady=(10, 5))
 
         # Ottengo le opzioni dalla Enum
-        stato_options = [stato.name for stato in StatoAbbonamento]
+        stato_options = [stato.value for stato in StatoAbbonamento]
 
         self.stato_var = ctk.StringVar(value=stato_options[0])
         self.stato_menu = ctk.CTkOptionMenu(

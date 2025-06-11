@@ -1,0 +1,154 @@
+import customtkinter as ctk
+
+class SchedaClientePage(ctk.CTkFrame):
+    def __init__(self, master, pt_controller, cliente_id, pt, back_callback):
+        """
+        master: riferimento al MainView
+        scheda: oggetto SchedaCliente da visualizzare
+        back_callback: funzione da chiamare per tornare alla pagina precedente
+        """
+        super().__init__(master)
+
+        self.back_callback = back_callback
+        self.pt = pt
+        self.pt_controller = pt_controller
+        self.scheda = pt_controller.get_scheda_cliente(cliente_id)
+
+        # Layout a griglia (2 righe, 1 colonna)
+        self.grid_rowconfigure(0, weight=0)  # riga titolo
+        self.grid_rowconfigure(1, weight=1)  # riga contenuto
+        self.grid_columnconfigure(0, weight=1)
+
+        # Titolo della pagina
+        title_label = ctk.CTkLabel(
+            self,
+            text=f"Scheda Cliente:",
+            font=ctk.CTkFont(size=24, weight="bold"),
+            text_color="#ffffff"
+        )
+        title_label.grid(row=0, column=0, pady=(10, 5), sticky="n")
+
+        # Bottone "Indietro"
+        back_button = ctk.CTkButton(
+            master=self,
+            text="Indietro",
+            width=100,
+            height=40,
+            corner_radius=8,
+            fg_color="#3a3a4d",
+            hover_color="#4a4a5d",
+            text_color="#ffffff",
+            font=ctk.CTkFont(size=14),
+            command=lambda: self.back_callback(self.pt)
+        )
+        back_button.grid(row=0, column=0, pady=(10, 5), padx=(10, 0), sticky="w")
+
+        # Contenuto delle informazioni della scheda
+        self.content_frame = ctk.CTkFrame(
+            master=self,
+            corner_radius=10,
+            fg_color="#3a3a4d"
+        )
+        self.content_frame.grid_rowconfigure(0, weight=1)
+        self.content_frame.grid_rowconfigure(1, weight=0)
+        self.content_frame.grid_rowconfigure(2, weight=0)
+        self.content_frame.grid_rowconfigure(3, weight=1)
+        
+        self.content_frame.grid_columnconfigure(0, weight=1)
+        self.content_frame.grid_columnconfigure(1, weight=1)
+
+        self.content_frame.grid(row=1, column=0, padx=20, pady=(5, 20), sticky="nsew")
+
+        # Controllo se il cliente ha già una scheda
+
+        if self.scheda:
+            self.build_ui(self.content_frame, self.scheda)
+        else:
+            self.build_ui_no_scheda(self.content_frame)
+            
+
+    
+    def build_ui(self, frame,scheda):
+        # Etichette per le informazioni della scheda
+        labels = [
+            ("Peso (kg):", scheda.peso),
+            ("Altezza (cm):", scheda.altezza),
+            ("Massa muscolare (kg):", scheda.massa_muscolare),
+            ("Massa grassa (kg):", scheda.massa_grassa),
+            ("BMI:", scheda.bmi),
+            ("Note:", scheda.note),
+            ("Data rilevazione:", scheda.data_rilevazione),
+            ("Data creazione:", scheda.data_creazione),
+        ]
+
+        for idx, (label_text, value) in enumerate(labels):
+            label = ctk.CTkLabel(
+                frame,
+                text=label_text,
+                font=ctk.CTkFont(size=16, weight="bold"),
+                text_color="#cccccc"
+            )
+            label.grid(row=idx, column=0, sticky="w", padx=(10, 5), pady=5)
+
+            value_label = ctk.CTkLabel(
+                frame,
+                text=str(value),
+                font=ctk.CTkFont(size=16),
+                text_color="#ffffff"
+            )
+            value_label.grid(row=idx, column=1, sticky="w", padx=(0, 10), pady=5)
+
+        # Sezione misure (se presenti)
+        if scheda.misure:
+            misure_title = ctk.CTkLabel(
+                frame,
+                text="Misure (cm):",
+                font=ctk.CTkFont(size=16, weight="bold"),
+                text_color="#cccccc"
+            )
+            misure_title.grid(row=len(labels), column=0, sticky="w", padx=(10, 5), pady=(10, 5))
+
+            for i, (misura, valore) in enumerate(scheda.misure.items()):
+                misura_label = ctk.CTkLabel(
+                    frame,
+                    text=f"{misura}:",
+                    font=ctk.CTkFont(size=15),
+                    text_color="#cccccc"
+                )
+                misura_label.grid(row=len(labels)+i+1, column=0, sticky="w", padx=(20, 5), pady=2)
+
+                valore_label = ctk.CTkLabel(
+                    frame,
+                    text=str(valore),
+                    font=ctk.CTkFont(size=15),
+                    text_color="#ffffff"
+                )
+                valore_label.grid(row=len(labels)+i+1, column=1, sticky="w", padx=(0, 10), pady=2)
+
+    def build_ui_no_scheda(self, frame):
+
+
+        no_scheda_label = ctk.CTkLabel(
+            frame,
+            text="Il cliente non possiede ancora una scheda.\nInizia creandone una!",
+            text_color="#ffffff",
+            font=ctk.CTkFont(size=20, weight="bold"),
+            justify="center"
+        )
+        
+        no_scheda_label.grid(row=1, column=0, columnspan=2, sticky="")
+
+        aggiungi_scheda_btn = ctk.CTkButton(
+            master=frame,
+            text="Aggiungi Scheda",
+            width=160,
+            height=40,
+            corner_radius=8,
+            fg_color="#3a7ff6",
+            hover_color="#5596ff",
+            text_color="#ffffff",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            # command=...
+        )
+        aggiungi_scheda_btn.grid(row=2, column=0, columnspan=2, sticky="")
+

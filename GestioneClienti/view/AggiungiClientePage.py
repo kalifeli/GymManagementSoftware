@@ -238,8 +238,6 @@ class AggiungiClientePage(ctk.CTkFrame):
             telefono=telefono,
             data_nascita=data_nascita,
             sesso=sesso.value,
-            scheda="",
-            abbonamento="",
             certificatoMedico=certificatoMedico
         )
 

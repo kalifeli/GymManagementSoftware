@@ -4,6 +4,7 @@ from GestioneClienti.model.Abbonamento import Abbonamento
 from GestioneClienti.model.Cliente import Cliente
 from GestioneClienti.model.Corso import Corso
 from GestioneClienti.model.Pacchetto import Pacchetto
+from GestioneClienti.model.pt import PersonalTrainer
 
 class IClienteDAO(ABC):
     @abstractmethod
@@ -73,4 +74,13 @@ class IClienteDAO(ABC):
         Controlla se l'abbonamento di un cliente è scaduto.
         """
         pass
+
+    @abstractmethod
+    def get_corso_by_nome(self, nomeCorso: str) -> Optional[Corso]:
+        """
+        Recupera un corso specifico in base al nome.
+        """
+        pass
+
+
 

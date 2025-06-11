@@ -16,6 +16,7 @@ class ClienteDaoFirebase(IClienteDAO):
         self.collection_abbonamenti = self.client.collection("abbonamenti")
         self.collection_corsi = self.client.collection("corsi")
         self.collection_pacchetti = self.client.collection("pacchetti")
+        self.collection_pt = self.client.collection("pt")
 
 
     def aggiungi_cliente(self, cliente: Cliente):
@@ -181,7 +182,13 @@ class ClienteDaoFirebase(IClienteDAO):
                     doc_ref.update({"stato": abbonamento.stato})  # Aggiorna lo stato dell'abbonamento
         except Exception as e:
             print(f"Errore nel controllo della scadenza dell'abbonamento: {e}")
-
-
     
-            
+    def get_corso_by_nome(self, nome_corso: str):
+        query = self.collection_corsi.where("nome", "==", nome_corso).stream()
+        corsi = []
+        for doc in query:
+            data = doc.to_dict()
+            data['id'] = doc.id
+            corsi.append(Corso.from_dict(data))
+        return corsi[0] if corsi else None
+    

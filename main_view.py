@@ -1,11 +1,17 @@
 import customtkinter as ctk
 from PIL import Image
 from GestioneClienti.controller.cliente_controller import ClienteController
+
+from GestioneClienti.controller.pt_controller import PtController
+from GestioneClienti.view.ClientiAssociatiPage import ClientiAssociatiPage
+from GestioneClienti.view.OrarioPtPage import OrarioPtPage
+from GestioneClienti.view.PtPage import PtHomePage
 from GestioneClienti.view.AggiungiAbbonamentoPage import AggiungiAbbonamentoPage
 from GestioneClienti.view.AggiungiClientePage import AggiungiClientePage
 from GestioneClienti.view.ClientiPage import ClientiPage
 from GestioneClienti.view.InfoCliente import InfoClientePage
 from GestioneClienti.view.ModificaClientePage import ModificaClientePage
+from GestioneClienti.view.SchedaClientePage import SchedaClientePage
 from HomePage import HomePage
 from loginPage import LoginPage
 
@@ -41,7 +47,17 @@ class MainView(ctk.CTk):
         self.home_page.tkraise()
 
     def show_pt_page(self):
-        pass
+        controller = PtController(self)
+        self.pt_page = PtHomePage(
+            self.container,
+            pt_controller =controller,
+            show_clienti_associati_callback= self.show_clienti_associati_page,
+            show_orario_callback=self.show_orario_pt_page,
+            logout_callback=self.show_login_page
+        )
+        self.pt_page.controller = PtController(self.pt_page)
+        self.pt_page.grid(row=0, column=0, sticky="nsew")
+        self.pt_page.tkraise()
 
     def show_home_page(self):
         self.home_page = HomePage(self.container, show_clienti_callback=self.show_clienti_page, logout_callback=self.show_login_page)
@@ -105,5 +121,42 @@ class MainView(ctk.CTk):
         self.modifica_cliente_page.controller = ClienteController(self.modifica_cliente_page)
         self.modifica_cliente_page.grid(row=0, column=0, sticky="nsew")
         self.modifica_cliente_page.tkraise()
+
+    def show_clienti_associati_page(self, pt):
+        controller = PtController(self)
+        self.clienti_associati_page = ClientiAssociatiPage(
+            self.container,
+            pt=pt,
+            pt_controller=controller,
+            back_callback=self.show_pt_page,
+            show_scheda_cliente_callback=self.show_scheda_cliente_page
+        )
+        self.clienti_associati_page.controller = PtController(self.clienti_associati_page)
+        self.clienti_associati_page.grid(row=0, column=0, sticky="nsew")
+        self.clienti_associati_page.tkraise()
     
+    def show_orario_pt_page(self, pt):
+        controller = PtController(self)
+        self.orario_pt_page = OrarioPtPage(
+            self.container,
+            pt=pt,
+            pt_controller=controller,
+            back_callback=self.show_pt_page,
+        )
+        self.orario_pt_page.controller = PtController(self.orario_pt_page)
+        self.orario_pt_page.grid(row=0, column=0, sticky="nsew")
+        self.orario_pt_page.tkraise()
+
+    def show_scheda_cliente_page(self, cliente_id, pt):
+        controller = PtController(self)
+        self.scheda_cliente_page = SchedaClientePage(
+            self.container,
+            pt_controller= controller,
+            cliente_id = cliente_id,
+            pt = pt,
+            back_callback= self.show_clienti_associati_page
+        )
+        self.scheda_cliente_page.pt_controller = PtController(self.scheda_cliente_page)
+        self.scheda_cliente_page.grid(row=0, column=0, sticky="nsew")
+        self.scheda_cliente_page.tkraise()
 
