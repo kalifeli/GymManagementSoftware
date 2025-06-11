@@ -1,7 +1,7 @@
 import customtkinter as ctk
 
 class SchedaClientePage(ctk.CTkFrame):
-    def __init__(self, master, pt_controller, cliente_id, pt, back_callback):
+    def __init__(self, master, pt_controller, cliente_id, pt, back_callback, aggiungi_scheda_callback):
         """
         master: riferimento al MainView
         scheda: oggetto SchedaCliente da visualizzare
@@ -13,24 +13,41 @@ class SchedaClientePage(ctk.CTkFrame):
         self.pt = pt
         self.pt_controller = pt_controller
         self.scheda = pt_controller.get_scheda_cliente(cliente_id)
+        self.aggiungi_scheda_callback = aggiungi_scheda_callback
 
-        # Layout a griglia (2 righe, 1 colonna)
-        self.grid_rowconfigure(0, weight=0)  # riga titolo
-        self.grid_rowconfigure(1, weight=1)  # riga contenuto
-        self.grid_columnconfigure(0, weight=1)
+        self.scroll_frame = ctk.CTkScrollableFrame(
+            master=self,
+            corner_radius=10,
+            fg_color="#2e2e3e"
+        )
+        self.scroll_frame.pack(fill="both", expand=True, padx=20, pady=(0,20))
+
+        self.scroll_frame.grid_columnconfigure(0, weight=1)
+        self.scroll_frame.grid_rowconfigure(0, weight=0)
+        self.scroll_frame.grid_rowconfigure(1, weight=1)
+
+        # Header (titolo + Indietro) su un'unica riga
+        self.header_frame = ctk.CTkFrame(
+            master=self.scroll_frame,
+            corner_radius=0,
+            fg_color="transparent"
+        )
+        self.header_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=(10, 20))
+        self.header_frame.grid_columnconfigure(0, weight=1)
+        self.header_frame.grid_columnconfigure(1, weight=0)
 
         # Titolo della pagina
         title_label = ctk.CTkLabel(
-            self,
+            self.header_frame,
             text=f"Scheda Cliente:",
             font=ctk.CTkFont(size=24, weight="bold"),
             text_color="#ffffff"
         )
-        title_label.grid(row=0, column=0, pady=(10, 5), sticky="n")
+        title_label.grid(row=0, column=0, sticky="w", pady=(0, 0))
 
         # Bottone "Indietro"
         back_button = ctk.CTkButton(
-            master=self,
+            master=self.header_frame,
             text="Indietro",
             width=100,
             height=40,
@@ -41,30 +58,24 @@ class SchedaClientePage(ctk.CTkFrame):
             font=ctk.CTkFont(size=14),
             command=lambda: self.back_callback(self.pt)
         )
-        back_button.grid(row=0, column=0, pady=(10, 5), padx=(10, 0), sticky="w")
+        back_button.grid(row=0, column=1, padx=(20, 0), sticky="e")
 
         # Contenuto delle informazioni della scheda
         self.content_frame = ctk.CTkFrame(
-            master=self,
+            master=self.scroll_frame,
             corner_radius=10,
             fg_color="#3a3a4d"
         )
-        self.content_frame.grid_rowconfigure(0, weight=1)
-        self.content_frame.grid_rowconfigure(1, weight=0)
-        self.content_frame.grid_rowconfigure(2, weight=0)
-        self.content_frame.grid_rowconfigure(3, weight=1)
-        
+
+        self.content_frame.grid(row=1, column=0, sticky="nsew", padx=20, pady=(5, 20))
         self.content_frame.grid_columnconfigure(0, weight=1)
         self.content_frame.grid_columnconfigure(1, weight=1)
-
-        self.content_frame.grid(row=1, column=0, padx=20, pady=(5, 20), sticky="nsew")
-
         # Controllo se il cliente ha già una scheda
 
         if self.scheda:
             self.build_ui(self.content_frame, self.scheda)
         else:
-            self.build_ui_no_scheda(self.content_frame)
+            self.build_ui_no_scheda(self.content_frame, cliente_id, aggiungi_scheda_callback)
             
 
     
@@ -125,7 +136,7 @@ class SchedaClientePage(ctk.CTkFrame):
                 )
                 valore_label.grid(row=len(labels)+i+1, column=1, sticky="w", padx=(0, 10), pady=2)
 
-    def build_ui_no_scheda(self, frame):
+    def build_ui_no_scheda(self, frame, cliente_id, aggiungi_scheda_callback):
 
 
         no_scheda_label = ctk.CTkLabel(
@@ -148,7 +159,7 @@ class SchedaClientePage(ctk.CTkFrame):
             hover_color="#5596ff",
             text_color="#ffffff",
             font=ctk.CTkFont(size=16, weight="bold"),
-            # command=...
+            command= lambda: aggiungi_scheda_callback(cliente_id)
         )
         aggiungi_scheda_btn.grid(row=2, column=0, columnspan=2, sticky="")
 

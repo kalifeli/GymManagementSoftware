@@ -88,7 +88,7 @@ class ClientiAssociatiPage(ctk.CTkFrame):
 
             cliente_label.bind(
                 "<Button-1>",
-                lambda event, c=cliente.id: self.show_scheda_cliente_callback(c, self.pt)
+                lambda event, c=cliente.id, pt=self.pt: self.show_scheda_cliente_callback(c, pt)
             )
 
             self.scrollable_frame.grid_rowconfigure(len(clienti_associati), weight=1)

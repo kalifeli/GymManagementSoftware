@@ -58,7 +58,6 @@ class ClienteDaoFirebase(IClienteDAO):
         docs = self.collection_clienti.stream()
         clienti = []
         for doc in docs:
-            #print("Documento trovato:", doc.id, doc.to_dict())
             data = doc.to_dict()
             if data:
                 data['id'] = doc.id
@@ -98,7 +97,7 @@ class ClienteDaoFirebase(IClienteDAO):
 
             return True
         except Exception as e:
-            print(f"Error adding abbonamento: {e}")
+            print(f"Errore nell'aggiunta dell'abbonamento abbonamento: {e}")
             return False 
 
     def elimina_abbonamento(self, abbonamento_id: str) -> bool:

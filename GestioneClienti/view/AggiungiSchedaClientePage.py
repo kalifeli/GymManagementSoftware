@@ -1,10 +1,14 @@
 import customtkinter as ctk
+from datetime import date
+
+from GestioneClienti.model.SchedaCliente import SchedaCliente
 class AggiungiSchedaClientePage(ctk.CTkFrame):
-    def __init__(self, master, cliente_id, back_callback=None):
+    def __init__(self, master, pt_controller, cliente_id, back_callback=None):
         super().__init__(master)
 
         self.cliente_id = cliente_id
         self.back_callback = back_callback
+        self.pt_controller = pt_controller
 
         #Frame principale scorrevole
         self.content_frame = ctk.CTkScrollableFrame(
@@ -12,7 +16,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             corner_radius=10,
             fg_color="#2e2e3e"
         )
-        self.content_frame.pack(fill="both", expand=True, padx=20, pady=20)
+        self.content_frame.pack(fill="both", expand=True)
 
         # Configuro la colonna 0 di content_frame per espandersi
         self.content_frame.grid_columnconfigure(0, weight=1)
@@ -61,6 +65,37 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         # Etichette e campi di input per i dati della scheda
 
+        # Data Creazione
+        ctk.CTkLabel(
+            master=form_frame,
+            text="Data Creazione: ",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color="#ffffff"
+        ).grid(row=0, column=0, sticky="w", padx=10, pady=(10, 5))
+
+        ctk.CTkLabel(
+            master=form_frame,
+            text= date.today().strftime("%d-%m-%Y"),
+            font=ctk.CTkFont(size=16),
+            text_color="#ffffff"
+        ).grid(row=1, column=0, sticky="ew", padx=10, pady=(10, 5))
+
+        # Data Rilevazione
+        ctk. CTkLabel(
+            master=form_frame,
+            text="Data Rilevazione: ",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color="#ffffff"
+        ).grid(row=0, column=1, sticky="ew", padx=10, pady=(10, 5))
+
+
+        ctk. CTkLabel(
+            master=form_frame,
+            text= date.today().strftime("%d-%m-%Y"),
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color="#ffffff"
+        ).grid(row=1, column=1, sticky="ew", padx=10, pady=(10, 5))
+
         # Peso
 
         ctk.CTkLabel(
@@ -68,7 +103,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             text="Peso:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#ffffff"
-        ).grid(row=0, column=0, sticky="w", padx=10, pady=(10, 5))
+        ).grid(row=2, column=0, sticky="ew", padx=10, pady=(10, 5))
 
         self.peso_entry = ctk.CTkEntry(
             master=form_frame,
@@ -78,7 +113,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             fg_color="#3a3a4d",
             text_color="#ffffff"
         )
-        self.peso_entry.grid(row=1, column=0, sticky="ew", padx=10, pady=(10, 5))
+        self.peso_entry.grid(row=3, column=0, sticky="ew", padx=10, pady=(10, 5))
 
         # Altezza
 
@@ -87,9 +122,9 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             text="altezza:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#ffffff"
-        ).grid(row=0, column=1, sticky="w", padx=10, pady=(10, 5))
+        ).grid(row=2, column=1, sticky="w", padx=10, pady=(10, 5))
 
-        self.aletzza_entry = ctk.CTkEntry(
+        self.altezza_entry = ctk.CTkEntry(
             master=form_frame,
             placeholder_text="cm",
             font=ctk.CTkFont(size=14),
@@ -97,7 +132,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             fg_color="#3a3a4d",
             text_color="#ffffff"
         )
-        self.aletzza_entry.grid(row=1, column=1, sticky="ew", padx=10, pady=(10, 5))
+        self.altezza_entry.grid(row=3, column=1, sticky="ew", padx=10, pady=(10, 5))
 
         # Massa Muscolare
 
@@ -106,7 +141,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             text="Massa Muscolare:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#ffffff"
-        ).grid(row=2, column=0, sticky="w", padx=10, pady=(10, 5))
+        ).grid(row=4, column=0, sticky="w", padx=10, pady=(10, 5))
 
         self.massa_muscolare_entry = ctk.CTkEntry(
             master=form_frame,
@@ -116,7 +151,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             fg_color="#3a3a4d",
             text_color="#ffffff"
         )
-        self.massa_muscolare_entry.grid(row=3, column=0, sticky="ew", padx=10, pady=(10, 5))
+        self.massa_muscolare_entry.grid(row=5, column=0, sticky="ew", padx=10, pady=(10, 5))
 
         # Massa grassa
 
@@ -125,9 +160,9 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             text="Massa Grassa:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#ffffff"
-        ).grid(row=2, column=1, sticky="w", padx=10, pady=(10, 5))
+        ).grid(row=4, column=1, sticky="w", padx=10, pady=(10, 5))
 
-        self.peso_entry = ctk.CTkEntry(
+        self.massa_grassa_entry = ctk.CTkEntry(
             master=form_frame,
             placeholder_text="Kg",
             font=ctk.CTkFont(size=14),
@@ -135,7 +170,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             fg_color="#3a3a4d",
             text_color="#ffffff"
         )
-        self.peso_entry.grid(row=3, column=1, sticky="ew", padx=10, pady=(10, 5))
+        self.massa_grassa_entry.grid(row=5, column=1, sticky="ew", padx=10, pady=(10, 5))
 
         # bmi
 
@@ -144,7 +179,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             text="bmi:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#ffffff"
-        ).grid(row=4, column=0, sticky="w", padx=10, pady=(10, 5))
+        ).grid(row=6, column=0, sticky="w", padx=10, pady=(10, 5))
 
         self.bmi_entry = ctk.CTkEntry(
             master=form_frame,
@@ -154,7 +189,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             fg_color="#3a3a4d",
             text_color="#ffffff"
         )
-        self.bmi_entry.grid(row=5, column=0, sticky="ew", padx=10, pady=(10, 5))
+        self.bmi_entry.grid(row=7, column=0, sticky="ew", padx=10, pady=(10, 5))
 
         # Note
 
@@ -163,17 +198,205 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             text="Note",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#ffffff"
-        ).grid(row=6, column=0, columnspan = 2,sticky="w", padx=10, pady=(10, 5))
+        ).grid(row=8, column=0, columnspan = 2,sticky="w", padx=10, pady=(10, 5))
 
-        self.nome_entry = ctk.CTkEntry(
+        self.note_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="peso / (altezza * 2)",
+            placeholder_text="Cosa devi ricordare?",
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
             text_color="#ffffff"
         )
-        self.note_entry.grid(row=7, column=0, columnspan = 2, sticky="ew", padx=10, pady=(10, 5))
+        self.note_entry.grid(row=9, column=0, columnspan = 2, sticky="ew", padx=10, pady=(10, 5))
+
+        # Misure
+
+        ctk.CTkLabel(
+            master=form_frame,
+            text="Misure",
+            font=ctk.CTkFont(size=24, weight="bold"),
+            text_color="#ffffff"
+        ).grid(row=10, column=0, columnspan = 2, sticky="n", padx=10, pady=(10, 5))
+
+        # bicipite
+
+        ctk.CTkLabel(
+            master=form_frame,
+            text="Bicipite",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color="#ffffff"
+        ).grid(row=11, column=0,sticky="w", padx=10, pady=(10, 5))
+
+        self.misura_bicipite_entry = ctk.CTkEntry(
+            master=form_frame,
+            placeholder_text="cm",
+            font=ctk.CTkFont(size=14),
+            width=200,
+            fg_color="#3a3a4d",
+            text_color="#ffffff"
+        )
+        self.misura_bicipite_entry.grid(row=12, column=0, sticky="ew", padx=10, pady=(10, 5))
+
+        # coscia
+
+        ctk.CTkLabel(
+            master=form_frame,
+            text="coscia",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color="#ffffff"
+        ).grid(row=11, column=1,sticky="w", padx=10, pady=(10, 5))
+
+        self.misura_coscia_entry = ctk.CTkEntry(
+            master=form_frame,
+            placeholder_text="cm",
+            font=ctk.CTkFont(size=14),
+            width=200,
+            fg_color="#3a3a4d",
+            text_color="#ffffff"
+        )
+        self.misura_coscia_entry.grid(row=12, column=1, sticky="ew", padx=10, pady=(10, 5))
+
+        # fianchi
+
+        ctk.CTkLabel(
+            master=form_frame,
+            text="fianchi",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color="#ffffff"
+        ).grid(row=13, column=0,sticky="w", padx=10, pady=(10, 5))
+
+        self.misura_fianchi_entry = ctk.CTkEntry(
+            master=form_frame,
+            placeholder_text="cm",
+            font=ctk.CTkFont(size=14),
+            width=200,
+            fg_color="#3a3a4d",
+            text_color="#ffffff"
+        )
+        self.misura_fianchi_entry.grid(row=14, column=0, sticky="ew", padx=10, pady=(10, 5))
+        # petto
+
+        ctk.CTkLabel(
+            master=form_frame,
+            text="petto",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color="#ffffff"
+        ).grid(row=13, column=1,sticky="w", padx=10, pady=(10, 5))
+
+        self.misura_petto_entry = ctk.CTkEntry(
+            master=form_frame,
+            placeholder_text="cm",
+            font=ctk.CTkFont(size=14),
+            width=200,
+            fg_color="#3a3a4d",
+            text_color="#ffffff"
+        )
+        self.misura_petto_entry.grid(row=14, column=1, sticky="ew", padx=10, pady=(10, 5))
+
+        # polpaccio
+
+        ctk.CTkLabel(
+            master=form_frame,
+            text="polpaccio",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color="#ffffff"
+        ).grid(row=15, column=0,sticky="w", padx=10, pady=(10, 5))
+
+        self.misura_polpaccio_entry = ctk.CTkEntry(
+            master=form_frame,
+            placeholder_text="cm",
+            font=ctk.CTkFont(size=14),
+            width=200,
+            fg_color="#3a3a4d",
+            text_color="#ffffff"
+        )
+        self.misura_polpaccio_entry.grid(row=16, column=0, sticky="ew", padx=10, pady=(10, 5))
+
+        # vita
+
+        ctk.CTkLabel(
+            master=form_frame,
+            text="vita",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color="#ffffff"
+        ).grid(row=15, column=1,sticky="w", padx=10, pady=(10, 5))
+
+        self.misura_vita_entry = ctk.CTkEntry(
+            master=form_frame,
+            placeholder_text="cm",
+            font=ctk.CTkFont(size=14),
+            width=200,
+            fg_color="#3a3a4d",
+            text_color="#ffffff"
+        )
+        self.misura_vita_entry.grid(row=16, column=1, sticky="ew", padx=10, pady=(10, 5))
+
+
+        self.salva_button = ctk.CTkButton(
+            master=form_frame,
+            text="Salva scheda",
+            height=36,
+            corner_radius=8,
+            fg_color="#4a4a5d",
+            hover_color="#5a5a6d",
+            text_color="#ffffff",
+            font=ctk.CTkFont(size=14),
+            command= self.on_salva_scheda
+        )
+        self.salva_button.grid(row=17, column=0, columnspan = 2, sticky="ew", padx=10, pady=(10, 5))
+
+        self.error_label = ctk.CTkLabel(
+            master=form_frame,
+            text="",
+            font=ctk.CTkFont(size=14),
+            text_color="#ff5555"  # rosso per gli errori
+            )
+        self.error_label.grid(row=18, column=0, columnspan=2, sticky="ew", padx=10, pady=(5, 0))
+
+    def on_salva_scheda(self):
+        data_rilevazione = date.today().strftime("%d-%m-%Y")
+        peso = self.peso_entry.get()
+        altezza = self.altezza_entry.get()
+        massa_muscolare = self.massa_muscolare_entry.get()
+        massa_grassa = self.massa_grassa_entry.get()
+        bmi = self.bmi_entry.get()
+        note = self.note_entry.get()
+
+        misure = {
+            "bicipite": self.misura_bicipite_entry.get(),
+            "coscia": self.misura_coscia_entry.get(),
+            "fianchi": self.misura_fianchi_entry.get(),
+            "petto": self.misura_petto_entry.get(),
+            "polpaccio": self.misura_polpaccio_entry.get(),
+            "vita": self.misura_vita_entry.get()
+        }
+
+        scheda = SchedaCliente(
+            id_cliente=self.cliente_id,
+            peso=float(peso),
+            altezza=float(altezza),
+            massa_muscolare=float(massa_muscolare),
+            massa_grassa=float(massa_grassa),
+            bmi=float(bmi),
+            note=note,
+            data_rilevazione=data_rilevazione,
+            data_creazione=date.today().strftime("%d-%m-%Y"),
+            misure=misure
+        )
+
+        if self.pt_controller.add_scheda_cliente(self.cliente_id, scheda):
+            self.back_callback()
+
+
+
+
+
+
+
+
+
+        
 
 
 

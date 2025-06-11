@@ -91,4 +91,23 @@ class PtDaoFirebase(IPtDAO):
             scheda_data = query[0].to_dict()
             return SchedaCliente.from_dict(scheda_data)
         return None
+    def add_scheda_cliente(self, scheda, cliente_id):
+        """
+        Aggiunge una nuova scheda ad un cliente che non la possiede.
+        """
+        try:
+            doc_ref = self.collection_schedaCliente.document()
+            scheda_id = doc_ref.id
+            dati = scheda.to_dict()
+            dati['id'] = scheda_id
+            dati['id_cliente'] = cliente_id
+            doc_ref.set(dati)
+            print(f"Scheda aggiunta: {scheda.id} per il cliente {cliente_id}")
+
+            return True
+        except Exception as e:
+            print(f"Errore nell'aggiunta della scheda: {e}")
+            return False
+
+
     

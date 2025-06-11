@@ -48,3 +48,12 @@ class IPtDAO(ABC):
         Recupera la scheda di un cliente specifico
         """
         pass
+
+    @abstractmethod
+    def add_scheda_cliente(self, scheda: SchedaCliente, cliente_id: str) -> bool:
+        """
+        Aggiunge una scheda con dati e misure ad un cliente
+        """
+        pass
+
+

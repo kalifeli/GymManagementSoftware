@@ -3,6 +3,7 @@ from PIL import Image
 from GestioneClienti.controller.cliente_controller import ClienteController
 
 from GestioneClienti.controller.pt_controller import PtController
+from GestioneClienti.view.AggiungiSchedaClientePage import AggiungiSchedaClientePage
 from GestioneClienti.view.ClientiAssociatiPage import ClientiAssociatiPage
 from GestioneClienti.view.OrarioPtPage import OrarioPtPage
 from GestioneClienti.view.PtPage import PtHomePage
@@ -154,9 +155,23 @@ class MainView(ctk.CTk):
             pt_controller= controller,
             cliente_id = cliente_id,
             pt = pt,
-            back_callback= self.show_clienti_associati_page
+            back_callback= self.show_clienti_associati_page,
+            aggiungi_scheda_callback= lambda cid=cliente_id, pt_=pt: self.show_aggiungi_scheda_cliente_page(cid, pt_)
         )
         self.scheda_cliente_page.pt_controller = PtController(self.scheda_cliente_page)
         self.scheda_cliente_page.grid(row=0, column=0, sticky="nsew")
         self.scheda_cliente_page.tkraise()
+
+    def show_aggiungi_scheda_cliente_page(self, cliente_id, pt):
+        controller = PtController(self)
+        self.aggiungi_scheda_cliente_page = AggiungiSchedaClientePage(
+            self.container,
+            cliente_id=cliente_id,
+            pt_controller= controller,
+            back_callback= lambda: self.show_scheda_cliente_page(cliente_id, pt)
+        )
+        self.aggiungi_scheda_cliente_page.pt_controller = PtController(self.aggiungi_scheda_cliente_page)
+        self.aggiungi_scheda_cliente_page.grid(row=0, column=0, sticky="nsew")
+        self.aggiungi_scheda_cliente_page.tkraise()
+    
 
