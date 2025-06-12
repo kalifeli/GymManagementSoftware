@@ -190,4 +190,13 @@ class ClienteDaoFirebase(IClienteDAO):
             data['id'] = doc.id
             corsi.append(Corso.from_dict(data))
         return corsi[0] if corsi else None
+    def update_abbonamento_cliente(self, abbonamento):
+        try:
+            doc_ref = self.collection_abbonamenti.document(abbonamento.id)
+            data = abbonamento.to_dict()
+            doc_ref.update(data)
+            return True
+        except Exception as e:
+            print(f"Errore durante l'aggiornamento dei dati dell'abbonamento: {e}")
+            return False
     

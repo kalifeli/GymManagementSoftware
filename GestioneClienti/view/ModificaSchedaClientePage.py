@@ -386,16 +386,22 @@ class ModificaSchedaClientePage(ctk.CTkFrame):
         # dict per le misure includendo solo i campi compilati
         misure = {}
         for key, entry in [
-            ("bicipite", self.misura_bicipite_entry or self.scheda.misure.get("bicipite")),
-            ("coscia", self.misura_coscia_entry or self.scheda.misure.get("coscia")),
-            ("fianchi", self.misura_fianchi_entry or self.scheda.misure.get("fianchi")),
-            ("petto", self.misura_petto_entry or self.scheda.misure.get("petto")),
-            ("polpaccio", self.misura_polpaccio_entry or self.scheda.misure.get("polpaccio")),
-            ("vita", self.misura_vita_entry or self.scheda.misure.get("vita")),
+            ("bicipite", self.misura_bicipite_entry),
+            ("coscia", self.misura_coscia_entry),
+            ("fianchi", self.misura_fianchi_entry),
+            ("petto", self.misura_petto_entry),
+            ("polpaccio", self.misura_polpaccio_entry),
+            ("vita", self.misura_vita_entry),
         ]:
-            val = self.safe_float(entry.get())
-            if val is not None:
-                misure[key] = val
+            testo = entry.get().strip()
+            if testo == "":
+                # Se il campo è vuoto, mantiene il valore precedente (se esiste)
+                if self.scheda.misure and key in self.scheda.misure:
+                    misure[key] = self.scheda.misure[key]
+            else:
+                val = self.safe_float(testo)
+                if val is not None:
+                    misure[key] = val
 
         try:
             # Creo una copia temporanea della scheda
@@ -407,7 +413,7 @@ class ModificaSchedaClientePage(ctk.CTkFrame):
             scheda_modificata.massa_muscolare = massa_muscolare
             scheda_modificata.massa_grassa = massa_grassa
             scheda_modificata.note = note
-            scheda_modificata.misure
+            scheda_modificata.misure = misure
 
             # Provo a salvare
             result = self.pt_controller.update_scheda_cliente(scheda_modificata)
@@ -425,10 +431,10 @@ class ModificaSchedaClientePage(ctk.CTkFrame):
 
                 self.back_callback()
             else:
-                self.error_label.configure(text="Errore durante l'aggiornamento della scheda del cliente.")
+                self.error_label.configure(text="Errore durante l'aggiornamento della scheda del cliente.", text_color="#ff5555")
         except Exception as e:
             print(f"Errore durante il salvataggio: {e}")
-            self.error_label.configure(text=f"Errore: {str(e)}")
+            self.error_label.configure(text=f"Errore: {str(e)}", text_color="#ff5555")
 
 
 

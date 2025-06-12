@@ -164,3 +164,6 @@ class ClienteController:
             self.dao.controlla_scadenze_abbonamenti(abbonamenti)
         except Exception as e:
             print(f"Errore nel controllo della scadenza degli abbonamenti: {str(e)}")
+
+    def update_abbonamento_cliente(self, abbonamento) -> bool:
+        return self.dao.update_abbonamento_cliente(abbonamento)

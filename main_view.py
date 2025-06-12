@@ -5,6 +5,7 @@ from GestioneClienti.controller.cliente_controller import ClienteController
 from GestioneClienti.controller.pt_controller import PtController
 from GestioneClienti.view.AggiungiSchedaClientePage import AggiungiSchedaClientePage
 from GestioneClienti.view.ClientiAssociatiPage import ClientiAssociatiPage
+from GestioneClienti.view.ModificaAbbonamentoPage import ModificaAbbonamentoPage
 from GestioneClienti.view.ModificaSchedaClientePage import ModificaSchedaClientePage
 from GestioneClienti.view.OrarioPtPage import OrarioPtPage
 from GestioneClienti.view.PtPage import PtHomePage
@@ -96,6 +97,7 @@ class MainView(ctk.CTk):
             controller=controller, 
             back_callback=self.show_clienti_page,
             aggiungi_abbonamento_callback=lambda: self.show_aggiungi_abbonamento_page(cliente),
+            modifica_abbonamento_callback=self.show_modifica_abbonamento_cliente_page,
             modifica_cliente_callback=lambda: self.show_modifica_cliente_page(cliente)
         )
         self.info_cliente_page.controller = ClienteController(self.info_cliente_page)
@@ -188,5 +190,17 @@ class MainView(ctk.CTk):
         self.modifica_scheda_cliente_page.pt_controller = PtController(self.modifica_scheda_cliente_page)
         self.modifica_scheda_cliente_page.grid(row=0, column=0, sticky="nsew")
         self.modifica_scheda_cliente_page.tkraise()
-    
+
+    def show_modifica_abbonamento_cliente_page(self, cliente, abbonamento):
+        controller = ClienteController(self)
+        self.modifica_abbonamento_page = ModificaAbbonamentoPage(
+            self.container,
+            abbonamento= abbonamento,
+            cliente_controller=controller,
+            back_callback= lambda: self.show_info_cliente_page(cliente)
+        )
+        self.modifica_abbonamento_page.cliente_controller = ClienteController(self.modifica_abbonamento_page)
+        self.modifica_abbonamento_page.grid(row=0, column=0, sticky="nsew")
+        self.modifica_abbonamento_page.tkraise()
+
 

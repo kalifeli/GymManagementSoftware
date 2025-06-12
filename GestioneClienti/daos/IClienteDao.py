@@ -82,5 +82,11 @@ class IClienteDAO(ABC):
         """
         pass
 
+    @abstractmethod
+    def update_abbonamento_cliente(self, abbonamento: Abbonamento) -> bool:
+        """
+        Modifica i dati di un abbonamento esistente
+        """
+
 
 

@@ -2,7 +2,7 @@ import customtkinter as ctk
 from PIL import Image
 
 class InfoClientePage(ctk.CTkFrame):
-    def __init__(self, master, cliente, controller, back_callback, aggiungi_abbonamento_callback=None, modifica_cliente_callback=None):
+    def __init__(self, master, cliente, controller, back_callback, aggiungi_abbonamento_callback=None, modifica_abbonamento_callback=None, modifica_cliente_callback=None):
         """
         master: riferimento al MainView
         cliente: oggetto cliente da visualizzare
@@ -14,6 +14,7 @@ class InfoClientePage(ctk.CTkFrame):
         self.controller = controller
         self.back_callback = back_callback
         self.aggiungi_abbonamento_callback = aggiungi_abbonamento_callback
+        self.modifica_abbonamento_callback = modifica_abbonamento_callback
         self.modifica_cliente_callback = modifica_cliente_callback
 
         self.abbonamenti = self.controller.get_abbonamenti_by_cliente_id(cliente.id) if cliente else []
@@ -107,7 +108,8 @@ class InfoClientePage(ctk.CTkFrame):
             abbonamenti=self.abbonamenti,
             cliente=self.cliente,
             controller=self.controller,
-            aggiungi_abbonamento_callback=self.aggiungi_abbonamento_callback
+            aggiungi_abbonamento_callback=self.aggiungi_abbonamento_callback,
+            modifica_abbonamento_callback = self.modifica_abbonamento_callback
         )
         self.sezione_abbonamenti.grid(row=2, column=0, columnspan=2, sticky="nsew", padx=10, pady=(0, 20))
 
@@ -162,10 +164,11 @@ class InfoClientePage(ctk.CTkFrame):
             self.error_label.configure(text="Errore nell'eliminazione del cliente. Riprova.")
 
 class AbbonamentoCard(ctk.CTkFrame):
-    def __init__(self, master, abbonamento, elimina_abbonamento=None):
+    def __init__(self, master, abbonamento, cliente, elimina_abbonamento=None, modifica_abbonamento=None):
         super().__init__(master)
         self.abbonamento = abbonamento
         self.elimina_callback = elimina_abbonamento
+        self.modifica_callback = modifica_abbonamento
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -221,13 +224,21 @@ class AbbonamentoCard(ctk.CTkFrame):
         )
         self.prezzo_label.grid(row=0, column=4, padx=10, pady=5, sticky="w")
 
+        self.saldato_label = ctk.CTkLabel(
+            master=specifiche_frame,
+            text=f"Pagato: {self.abbonamento.saldato}",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            text_color="#ffffff"
+        )
+        self.saldato_label.grid(row=0, column=5, padx=10, pady=(5, 0), sticky="w")
+
         self.stato_label = ctk.CTkLabel(
             master=specifiche_frame,
             text=f"Stato: {self.abbonamento.stato}",
             font=ctk.CTkFont(size=14, weight="bold"),
             text_color="#ffffff"
         )
-        self.stato_label.grid(row=0, column=5, padx=10, pady=(5, 0), sticky="w")
+        self.stato_label.grid(row=0, column=6, padx=10, pady=(5, 0), sticky="w")
 
         self.bottone_elimina = ctk.CTkButton(
             master=self,
@@ -241,15 +252,30 @@ class AbbonamentoCard(ctk.CTkFrame):
             font=ctk.CTkFont(size=14),
             command=lambda:self.elimina_callback(self.abbonamento.id)
         )
-        self.bottone_elimina.grid(row=0, column=6, padx=10, pady=(5, 10), sticky="e")
+        self.bottone_elimina.grid(row=0, column=7, padx=10, pady=(5, 10), sticky="e")
+
+        self.bottone_modifica = ctk.CTkButton(
+            master=self,
+            text="Modifica",
+            width=70,
+            height=30,
+            corner_radius=8,
+            fg_color="#3a3a4d",
+            hover_color="#4a4a5d",
+            text_color="#ffffff",
+            font=ctk.CTkFont(size=14),
+            command=lambda:self.modifica_callback(cliente ,self.abbonamento)
+        )
+        self.bottone_modifica.grid(row=0, column=6, padx=10, pady=(5, 10), sticky="e")
 
 class SezioneAbbonamento(ctk.CTkFrame):
-    def __init__(self, master, abbonamenti=None, cliente=None, controller=None, aggiungi_abbonamento_callback=None):
+    def __init__(self, master, abbonamenti=None, cliente=None, controller=None, aggiungi_abbonamento_callback=None, modifica_abbonamento_callback=None):
         super().__init__(master, corner_radius=10)
         self.abbonamenti = abbonamenti if abbonamenti else []
         self.cliente = cliente
         self.controller = controller
         self.aggiungi_abbonamento_callback = aggiungi_abbonamento_callback
+        self.modifica_abbonamento_callback= modifica_abbonamento_callback
 
         self.controller.controlla_scadenze_abbonamenti(self.abbonamenti)
 
@@ -307,7 +333,9 @@ class SezioneAbbonamento(ctk.CTkFrame):
                     card = AbbonamentoCard(
                         master=cards_frame,
                         abbonamento=abbonamento,
-                        elimina_abbonamento=elimina_callback
+                        cliente= self.cliente,
+                        elimina_abbonamento=elimina_callback,
+                        modifica_abbonamento=self.modifica_abbonamento_callback
                     )
                     card.grid(row=idx, column=0, padx=0, pady=5, sticky="ew")
 
