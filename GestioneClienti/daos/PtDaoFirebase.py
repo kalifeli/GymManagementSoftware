@@ -108,6 +108,32 @@ class PtDaoFirebase(IPtDAO):
         except Exception as e:
             print(f"Errore nell'aggiunta della scheda: {e}")
             return False
+        
+    def elimina_scheda_cliente(self, scheda_id:str):
+        try:
+            self.collection_schedaCliente.document(scheda_id).delete()
+            print("scheda cliente eliminata correttamente")
+            return True
+        except Exception as e:
+            print(f"Errore durante l'eliminazione della scheda cliente {e}")
+            return False
+        
+    def update_scheda_cliente(self, scheda):
+        try:
+            doc_ref = self.collection_schedaCliente.document(scheda.id)
+            # conveeto l'istanza della scheda in un dizionario
+            dati = scheda.to_dict()
+            # aggiorno il documento con i nuovi dati
+            doc_ref.update(dati)
+            return True
+        except Exception as e:
+            print(f"Errore durante la modifica della scheda: {e}")
+            return False
+
+
+    
+
+            
 
 
     

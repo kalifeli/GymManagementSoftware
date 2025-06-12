@@ -5,6 +5,7 @@ from GestioneClienti.controller.cliente_controller import ClienteController
 from GestioneClienti.controller.pt_controller import PtController
 from GestioneClienti.view.AggiungiSchedaClientePage import AggiungiSchedaClientePage
 from GestioneClienti.view.ClientiAssociatiPage import ClientiAssociatiPage
+from GestioneClienti.view.ModificaSchedaClientePage import ModificaSchedaClientePage
 from GestioneClienti.view.OrarioPtPage import OrarioPtPage
 from GestioneClienti.view.PtPage import PtHomePage
 from GestioneClienti.view.AggiungiAbbonamentoPage import AggiungiAbbonamentoPage
@@ -156,7 +157,8 @@ class MainView(ctk.CTk):
             cliente_id = cliente_id,
             pt = pt,
             back_callback= self.show_clienti_associati_page,
-            aggiungi_scheda_callback= lambda cid=cliente_id, pt_=pt: self.show_aggiungi_scheda_cliente_page(cid, pt_)
+            aggiungi_scheda_callback= lambda cid=cliente_id, pt_=pt: self.show_aggiungi_scheda_cliente_page(cid, pt_),
+            modifica_scheda_callback=lambda scheda: self.show_modifica_scheda_cliente_page(cliente_id, scheda, pt)
         )
         self.scheda_cliente_page.pt_controller = PtController(self.scheda_cliente_page)
         self.scheda_cliente_page.grid(row=0, column=0, sticky="nsew")
@@ -173,5 +175,18 @@ class MainView(ctk.CTk):
         self.aggiungi_scheda_cliente_page.pt_controller = PtController(self.aggiungi_scheda_cliente_page)
         self.aggiungi_scheda_cliente_page.grid(row=0, column=0, sticky="nsew")
         self.aggiungi_scheda_cliente_page.tkraise()
+    
+    def show_modifica_scheda_cliente_page(self, cliente_id, scheda_cliente, pt):
+        controller = PtController(self)
+        self.modifica_scheda_cliente_page = ModificaSchedaClientePage(
+            self.container,
+            pt_controller= controller,
+            scheda_cliente=scheda_cliente,
+            back_callback= lambda: self.show_scheda_cliente_page(cliente_id, pt)
+        )
+
+        self.modifica_scheda_cliente_page.pt_controller = PtController(self.modifica_scheda_cliente_page)
+        self.modifica_scheda_cliente_page.grid(row=0, column=0, sticky="nsew")
+        self.modifica_scheda_cliente_page.tkraise()
     
 

@@ -55,5 +55,15 @@ class IPtDAO(ABC):
         Aggiunge una scheda con dati e misure ad un cliente
         """
         pass
+    @abstractmethod
+    def elimina_scheda_cliente(self, scheda_id: str) -> bool:
+        """
+        Elimina una scheda cliente dal database
+        """
+        pass
+    def update_scheda_cliente(self, scheda: SchedaCliente) -> bool:
+        """
+        Aggiorna i dati della scheda di un cliente a seguito di una modifica
+        """
 
 

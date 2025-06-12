@@ -229,7 +229,7 @@ class ModificaClientePage(ctk.CTkFrame):
         certificatoMedico = self.cert_var.get()
 
         try:
-            # Crea una copia temporanea del cliente
+            # Creo una copia temporanea del cliente
             cliente_modificato = deepcopy(self.cliente)
             cliente_modificato.nome = nome
             cliente_modificato.cognome = cognome

@@ -1,7 +1,7 @@
 import customtkinter as ctk
 
 class SchedaClientePage(ctk.CTkFrame):
-    def __init__(self, master, pt_controller, cliente_id, pt, back_callback, aggiungi_scheda_callback):
+    def __init__(self, master, pt_controller, cliente_id, pt, back_callback, aggiungi_scheda_callback, modifica_scheda_callback):
         """
         master: riferimento al MainView
         scheda: oggetto SchedaCliente da visualizzare
@@ -14,6 +14,7 @@ class SchedaClientePage(ctk.CTkFrame):
         self.pt_controller = pt_controller
         self.scheda = pt_controller.get_scheda_cliente(cliente_id)
         self.aggiungi_scheda_callback = aggiungi_scheda_callback
+        self.modifica_scheda_callback = modifica_scheda_callback
 
         self.scroll_frame = ctk.CTkScrollableFrame(
             master=self,
@@ -108,6 +109,9 @@ class SchedaClientePage(ctk.CTkFrame):
                 text_color="#ffffff"
             )
             value_label.grid(row=idx, column=1, sticky="w", padx=(0, 10), pady=5)
+        
+        # Calcola la riga finale
+        last_row = len(labels)
 
         # Sezione misure (se presenti)
         if scheda.misure:
@@ -117,7 +121,7 @@ class SchedaClientePage(ctk.CTkFrame):
                 font=ctk.CTkFont(size=16, weight="bold"),
                 text_color="#cccccc"
             )
-            misure_title.grid(row=len(labels), column=0, sticky="w", padx=(10, 5), pady=(10, 5))
+            misure_title.grid(row=last_row, column=0, sticky="w", padx=(10, 5), pady=(10, 5))
 
             for i, (misura, valore) in enumerate(scheda.misure.items()):
                 misura_label = ctk.CTkLabel(
@@ -126,7 +130,7 @@ class SchedaClientePage(ctk.CTkFrame):
                     font=ctk.CTkFont(size=15),
                     text_color="#cccccc"
                 )
-                misura_label.grid(row=len(labels)+i+1, column=0, sticky="w", padx=(20, 5), pady=2)
+                misura_label.grid(row=last_row+i+1, column=0, sticky="w", padx=(20, 5), pady=2)
 
                 valore_label = ctk.CTkLabel(
                     frame,
@@ -134,7 +138,45 @@ class SchedaClientePage(ctk.CTkFrame):
                     font=ctk.CTkFont(size=15),
                     text_color="#ffffff"
                 )
-                valore_label.grid(row=len(labels)+i+1, column=1, sticky="w", padx=(0, 10), pady=2)
+                valore_label.grid(row=last_row+i+1, column=1, sticky="w", padx=(0, 10), pady=2)
+            last_row = last_row + len(scheda.misure) + 1
+        
+        self.elimina_scheda_btn = ctk.CTkButton(
+            master=self.content_frame,
+            text="Elimina Scheda",
+            width=150,
+            height=40,
+            corner_radius=8,
+            fg_color="#e74c3c",
+            hover_color="#c0392b",
+            text_color="#ffffff",
+            font=ctk.CTkFont(size=14),
+            command=lambda: self.on_delete_scheda()
+        )
+        self.elimina_scheda_btn.grid(row=last_row, column=0, sticky="e", padx=(0, 10), pady=2)
+
+        self.modifica_scheda_btn = ctk.CTkButton(
+            master=self.content_frame,
+            text="Modifica Cliente",
+            width=150,
+            height=40,
+            corner_radius=8,
+            fg_color="#3a3a4d",
+            hover_color="#4a4a5d",
+            text_color="#ffffff",
+            font=ctk.CTkFont(size=14),
+            command=lambda: self.modifica_scheda_callback(scheda)
+        )
+        self.modifica_scheda_btn.grid(row=last_row, column=1, sticky="w", padx=(0, 10), pady=2)
+
+        self.error_label = ctk.CTkLabel(
+            master=self.content_frame,
+            text="",
+            font=ctk.CTkFont(size=14),
+            text_color="#ff5555"  # rosso per gli errori
+            )
+        self.error_label.grid(row=last_row + 1, column=0, columnspan=2, sticky="ew", padx=10, pady=(5, 0))
+
 
     def build_ui_no_scheda(self, frame, cliente_id, aggiungi_scheda_callback):
 
@@ -162,4 +204,13 @@ class SchedaClientePage(ctk.CTkFrame):
             command= lambda: aggiungi_scheda_callback(cliente_id)
         )
         aggiungi_scheda_btn.grid(row=2, column=0, columnspan=2, sticky="")
+
+    def on_delete_scheda(self):
+            self.error_label.configure(text = "")
+            if not self.pt_controller.elimina_scheda_cliente(self.scheda.id):
+                self.error_label.configure(text = "Si è verificato un errore durante l'eliminazione della scheda")
+            else:
+                self.back_callback(self.pt)
+
+        
 

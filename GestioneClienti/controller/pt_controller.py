@@ -45,8 +45,15 @@ class PtController:
         except:
             print("Si è verificato un errore durante il recupero della scheda del cliente " + cliente_id )
             return None
+        
     def add_scheda_cliente(self, scheda, cliente_id) -> bool:
             return self.pt_dao.add_scheda_cliente(cliente_id, scheda)
+    
+    def elimina_scheda_cliente(self, scheda_id:str) -> bool:
+        return self.pt_dao.elimina_scheda_cliente(scheda_id)
+    
+    def update_scheda_cliente(self, scheda: SchedaCliente) -> bool:
+        return self.pt_dao.update_scheda_cliente(scheda)
 
 
         

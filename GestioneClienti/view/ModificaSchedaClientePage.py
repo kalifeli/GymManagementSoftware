@@ -1,14 +1,15 @@
+from copy import deepcopy
 import customtkinter as ctk
 from datetime import date
-
 from GestioneClienti.model.SchedaCliente import SchedaCliente
-class AggiungiSchedaClientePage(ctk.CTkFrame):
-    def __init__(self, master, pt_controller, cliente_id, back_callback=None):
+
+class ModificaSchedaClientePage(ctk.CTkFrame):
+    def __init__(self, master, pt_controller, scheda_cliente: SchedaCliente, back_callback=None):
         super().__init__(master)
 
-        self.cliente_id = cliente_id
         self.back_callback = back_callback
         self.pt_controller = pt_controller
+        self.scheda = scheda_cliente
 
         #Frame principale scorrevole
         self.content_frame = ctk.CTkScrollableFrame(
@@ -75,7 +76,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         ctk.CTkLabel(
             master=form_frame,
-            text= date.today().strftime("%d-%m-%Y"),
+            text= self.scheda.data_creazione,
             font=ctk.CTkFont(size=16),
             text_color="#ffffff"
         ).grid(row=1, column=0, sticky="ew", padx=10, pady=(10, 5))
@@ -91,7 +92,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         ctk. CTkLabel(
             master=form_frame,
-            text= date.today().strftime("%d-%m-%Y"),
+            text= self.scheda.data_rilevazione,
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#ffffff"
         ).grid(row=1, column=1, sticky="ew", padx=10, pady=(10, 5))
@@ -107,7 +108,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         self.peso_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="Kg",
+            placeholder_text= f"{self.scheda.peso} Kg",
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
@@ -126,7 +127,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         self.altezza_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="cm",
+            placeholder_text= f"{self.scheda.altezza} cm",
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
@@ -145,7 +146,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         self.massa_muscolare_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="Kg",
+            placeholder_text=f"{self.scheda.massa_muscolare} Kg",
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
@@ -164,7 +165,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         self.massa_grassa_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="Kg",
+            placeholder_text=f"{self.scheda.massa_grassa} Kg",
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
@@ -183,7 +184,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         self.bmi_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="peso / (altezza * 2)",
+            placeholder_text=self.scheda.bmi,
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
@@ -202,7 +203,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         self.note_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="Cosa devi ricordare?",
+            placeholder_text= self.scheda.note,
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
@@ -230,7 +231,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         self.misura_bicipite_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="cm",
+            placeholder_text=str(self.scheda.misure.get("bicipite")),
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
@@ -249,7 +250,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         self.misura_coscia_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="cm",
+            placeholder_text=str(self.scheda.misure.get("coscia")),
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
@@ -268,7 +269,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         self.misura_fianchi_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="cm",
+            placeholder_text=str(self.scheda.misure.get("fianchi")),
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
@@ -286,7 +287,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         self.misura_petto_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="cm",
+            placeholder_text=str(self.scheda.misure.get("petto")),
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
@@ -305,7 +306,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         self.misura_polpaccio_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="cm",
+            placeholder_text= str(self.scheda.misure.get("polpaccio")),
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
@@ -324,7 +325,7 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
 
         self.misura_vita_entry = ctk.CTkEntry(
             master=form_frame,
-            placeholder_text="cm",
+            placeholder_text= str(self.scheda.misure.get("vita")),
             font=ctk.CTkFont(size=14),
             width=200,
             fg_color="#3a3a4d",
@@ -366,51 +367,74 @@ class AggiungiSchedaClientePage(ctk.CTkFrame):
             return default
 
     def on_salva_scheda(self):
-        peso = self.safe_float(self.peso_entry.get())
-        altezza = self.safe_float(self.altezza_entry.get())
-        massa_muscolare = self.safe_float(self.massa_muscolare_entry.get())
-        massa_grassa = self.safe_float(self.massa_grassa_entry.get())
-        note = self.note_entry.get().strip()
+
+        #recupero i dati dalle entry
+        peso = self.safe_float(self.peso_entry.get()) or self.scheda.peso
+        altezza = self.safe_float(self.altezza_entry.get()) or self.scheda.altezza
+        massa_muscolare = self.safe_float(self.massa_muscolare_entry.get()) or self.scheda.massa_muscolare
+        massa_grassa = self.safe_float(self.massa_grassa_entry.get()) or self.scheda.massa_grassa
+        note = self.note_entry.get().strip() or self.scheda.note
+        data_rilevazione = date.today().strftime("%d-%m-%Y")
 
         # Calcolo BMI solo se peso e altezza sono validi
         if peso is not None and altezza is not None and peso > 0 and altezza > 0:
             h_m = altezza / 100
-            bmi = round(peso / (h_m * h_m), 1)
+            bmi = round(peso / (h_m * 2), 1)
         else:
             bmi = None
 
         # dict per le misure includendo solo i campi compilati
         misure = {}
         for key, entry in [
-            ("bicipite", self.misura_bicipite_entry),
-            ("coscia", self.misura_coscia_entry),
-            ("fianchi", self.misura_fianchi_entry),
-            ("petto", self.misura_petto_entry),
-            ("polpaccio", self.misura_polpaccio_entry),
-            ("vita", self.misura_vita_entry),
+            ("bicipite", self.misura_bicipite_entry or self.scheda.misure.get("bicipite")),
+            ("coscia", self.misura_coscia_entry or self.scheda.misure.get("coscia")),
+            ("fianchi", self.misura_fianchi_entry or self.scheda.misure.get("fianchi")),
+            ("petto", self.misura_petto_entry or self.scheda.misure.get("petto")),
+            ("polpaccio", self.misura_polpaccio_entry or self.scheda.misure.get("polpaccio")),
+            ("vita", self.misura_vita_entry or self.scheda.misure.get("vita")),
         ]:
             val = self.safe_float(entry.get())
             if val is not None:
                 misure[key] = val
 
-        scheda = SchedaCliente(
-            id_cliente=self.cliente_id,
-            peso=peso,
-            altezza=altezza,
-            massa_muscolare=massa_muscolare,
-            massa_grassa=massa_grassa,
-            bmi=bmi,
-            note=note,
-            data_rilevazione=date.today().strftime("%d-%m-%Y"),
-            data_creazione=date.today().strftime("%d-%m-%Y"),
-            misure=misure
-        )
+        try:
+            # Creo una copia temporanea della scheda
+            scheda_modificata = deepcopy(self.scheda)
+            scheda_modificata.peso = peso
+            scheda_modificata.altezza = altezza
+            scheda_modificata.data_rilevazione = data_rilevazione
+            scheda_modificata.bmi = bmi
+            scheda_modificata.massa_muscolare = massa_muscolare
+            scheda_modificata.massa_grassa = massa_grassa
+            scheda_modificata.note = note
+            scheda_modificata.misure
 
-        if self.pt_controller.add_scheda_cliente(self.cliente_id, scheda):
-            if self.back_callback:
+            # Provo a salvare
+            result = self.pt_controller.update_scheda_cliente(scheda_modificata)
+
+            if result:
+                # aggiorno ora l'oggetto in memoria
+                self.scheda.peso = peso
+                self.scheda.altezza = altezza
+                self.scheda.data_rilevazione = data_rilevazione
+                self.scheda.bmi = bmi
+                self.scheda.massa_muscolare = massa_muscolare
+                self.scheda.massa_grassa = massa_grassa
+                self.scheda.note = note
+                self.scheda.misure
+
                 self.back_callback()
-        else:
-            self.error_label.configure(text="Errore durante il salvataggio della scheda.")
+            else:
+                self.error_label.configure(text="Errore durante l'aggiornamento della scheda del cliente.")
+        except Exception as e:
+            print(f"Errore durante il salvataggio: {e}")
+            self.error_label.configure(text=f"Errore: {str(e)}")
+
+
+
+
+
+           
 
 
 
